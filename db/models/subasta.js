@@ -6,7 +6,7 @@ const subastaSchema = new Schema({
     usuario: String,
     precioInicial: Number,
     fechaCierre: Date,
-    descripcion: Text,
+    descripcion: String,
     precioActual: Number
 })
 
