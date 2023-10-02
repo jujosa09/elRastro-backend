@@ -2,7 +2,7 @@ const {Schema, model} = require('mongoose')
 
 const pujaSchema = new Schema({
     usuario: String,
-    cantidad: Number,
+    precio: Number,
     fecha: Date
 })
 
