@@ -45,56 +45,13 @@ const createSubasta = async (subasta) => {
     }
 };
 
-const eliminarSubasta = async (id) => {
-    try{
-        const subastaFinded = await Subasta.findById(id)
-        if(subastaFinded){
-            const subasta = await Subasta.deleteOne(subastaFinded)
-            return {statusCode: 200, message: "La subasta se ha borrado correctamente"}
-        }else{
-            return { statusCode: 400, message: { error: "No se encontró la subasta" } };
-        }
-        
-    }catch(error){
-        console.error("Error en eliminarSubasta: ", error);
-        return {statusCode: 500, message: {error: error}};
-    }
-
-}
-
-const actualizarSubasta = async (subasta) => {
-    try {
-        const subastaFinded = await Subasta.findById(subasta._id)
-        if(subastaFinded){
-            subastaFinded._id = subasta._id
-            subastaFinded.producto = subasta.producto
-            subastaFinded.direccion = subasta.direccion
-            subastaFinded.usuario = subasta.usuario
-            subastaFinded.precionInicial = subasta.precionInicial
-            subastaFinded.fechaCierre = subasta.fechaCierre
-            subastaFinded.descripcion = subasta.descripcion
-            subastaFinded.precionInicial = subasta.precioActual
-            subastaFinded.puja = subasta.puja
-
-
-            subastaFinded.save()
-            return { statusCode: 200, message: subastaFinded };
-        }else{
-            return { statusCode: 400, message: { error: "No se encontró la subasta" } };
-        }
-        
-    } catch(error){
-        console.error("Error en eliminarSubasta: ", error);
-        return {statusCode: 500, message: {error: error}};
-    }
-}
-
-
 const getSubastaById = async (id) => {
     try{
         const subastaFinded = await Subasta.findById(id)
         if(subastaFinded){
             return {statusCode: 200, message: subastaFinded}
+        }else{
+            return {statusCode: 400, message: "No existe un objeto con id " + id}
         }
     }catch (error) {
         console.error("Error en getSubastaById: ", error);
@@ -105,8 +62,10 @@ const getSubastaById = async (id) => {
 const getSubastasByNombre = async (nombreProducto) => {
     try{
         const subastasFinded = await Subasta.find({producto: nombreProducto})
-        if(subastasFinded){
+        if(subastasFinded.length !== 0){
             return {statusCode: 200, message: subastasFinded}
+        }else{
+            return {statusCode: 400, message: "No existe un objeto con nombre " + nombreProducto}
         }
     }catch (error) {
         console.log("Error en getSubastaByNombre: ", error)
@@ -117,8 +76,10 @@ const getSubastasByNombre = async (nombreProducto) => {
 const getSubastasByUsuario = async (nombreUsuario) => {
     try{
         const subastasFinded = await Subasta.find({usuario: nombreUsuario})
-        if(subastasFinded){
+        if(subastasFinded.length !== 0){
             return {statusCode: 200, message: subastasFinded}
+        }else{
+            return {statusCode: 400, message: "No existe un objeto con usuario " + nombreUsuario}
         }
     }catch (error) {
         console.log("Error en getSubastaByUsuario: ", error)
@@ -129,8 +90,10 @@ const getSubastasByUsuario = async (nombreUsuario) => {
 const getSubastasByPrecio = async (precio) => {
     try{
         const subastasFinded = await Subasta.find({precioActual: precio})
-        if(subastasFinded){
+        if(subastasFinded.length !== 0){
             return {statusCode: 200, message: subastasFinded}
+        }else{
+            return {statusCode: 400, message: "No existe un objeto con precio " + precio}
         }
     }catch (error) {
         console.log("Error en getSubastaByPrecio: ", error)
@@ -141,14 +104,28 @@ const getSubastasByPrecio = async (precio) => {
 const getSubastas = async () => {
     try{
         const subastasFinded = await Subasta.find({})
-        if(subastasFinded){
+        if(subastasFinded.length !== 0){
             return {statusCode: 200, message: subastasFinded}
+        }else{
+            return {statusCode: 400, message: "No existen subastas"}
         }
     }catch (error) {
-        console.log("Error en getSubastaByPrecio: ", error)
+        console.log("Error en getSubasta: ", error)
         return {statusCode: 500, message: {error: error}}
     }
 }
+
+const deleteSubasta = async (subasta) => {
+    const subastaFound = await Subasta.findOneAndDelete({_id: subasta._id})
+
+    if (subastaFound != null){
+        return {codeStatus: 200, message: subastaFound.toJSON()}
+    }else{
+        return {codeStatus: 400, message: "La subasta que quiere borrar no existe"}
+    }
+
+}
+
 
 module.exports = {
     createSubasta,
@@ -157,6 +134,5 @@ module.exports = {
     getSubastasByUsuario,
     getSubastasByPrecio,
     getSubastas,
-    eliminarSubasta,
-    actualizarSubasta
+    deleteSubasta
 };
