@@ -2,8 +2,7 @@ require('./db/mongoose')
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
-const {routerSubasta} = require('./routes/subastaRoute')
-const {routerValoracion} = require('./routes/valoracionRoute')
+const {router} = require('./routes/subastaRoute')
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
@@ -13,8 +12,7 @@ app.get('/', (req, res, next) => {
     next()
 })
 
-app.use('/', routerSubasta)
-app.use('/', routerValoracion)
+app.use('/', router)
 
 const port = 5000
 app.listen(port, () => {

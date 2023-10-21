@@ -2,14 +2,14 @@ const express = require('express')
 
 const { createSubastaController, getSubastaByIdController } = require('../controllers/subastaController')
 
-const routerSubasta = express.Router()
+const router = express.Router()
 
-routerSubasta.post('/subasta', createSubastaController)
-routerSubasta.get('/subasta/:id', getSubastaByIdController)
+router.post('/subasta', createSubastaController)
+router.get('/subasta/:id', getSubastaByIdController)
 
 
 module.exports = {
-    routerSubasta
+    router
 }
 
 
