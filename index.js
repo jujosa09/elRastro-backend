@@ -4,6 +4,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const {routerSubasta} = require('./routes/subastaRoute')
 const {routerValoracion} = require('./routes/valoracionRoute')
+const {routerImage} = require('./routes/imageRoute')
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
@@ -13,8 +14,9 @@ app.get('/', (req, res, next) => {
     next()
 })
 
-app.use('/', routerSubasta)
-app.use('/', routerValoracion)
+app.use('/subasta', routerSubasta)
+app.use('/valoracion', routerValoracion)
+app.use('/upload', routerImage)
 
 const port = 5000
 app.listen(port, () => {

@@ -3,8 +3,8 @@ const { createValoracionController, deleteValoracionController } = require('../c
 
 const routerValoracion = express.Router()
 
-routerValoracion.post('/valoracion', createValoracionController)
-routerValoracion.delete('/valoracion/:id', deleteValoracionController)
+routerValoracion.post('/', createValoracionController)
+routerValoracion.delete('/:id', deleteValoracionController)
 
 module.exports = {
     routerValoracion

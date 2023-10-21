@@ -9,6 +9,7 @@ const subastaSchema = new Schema({
     fechaCierre: Date,
     descripcion: String,
     precioActual: Number,
+    image: String,
     puja: JSON
 })
 

@@ -4,8 +4,9 @@ const { createSubastaController, getSubastaByIdController } = require('../contro
 
 const routerSubasta = express.Router()
 
-routerSubasta.post('/subasta', createSubastaController)
-routerSubasta.get('/subasta/:id', getSubastaByIdController)
+routerSubasta.post('/', createSubastaController)
+routerSubasta.get('/', getSubastaByIdController)
+routerSubasta.get('/:id', getSubastaByIdController)
 
 
 module.exports = {
