@@ -43,12 +43,13 @@ const createValoracion = async (valoracion) => {
     }
 }
 
-const deleteValoracion = async (valoracion) => {
-    const valoracionFound = await Valoracion.findOneAndDelete({_id: valoracion._id})
+const deleteValoracion = async (id) => {
+    console.log(id)
+    const valoracionFound = await Valoracion.findOneAndDelete({_id: id})
     if (valoracionFound != null){
-        return {codeStatus: 200, message: valoracionFound.toJSON()}
+        return {statusCode: 200, message: valoracionFound.toJSON()}
     }else{
-        return {codeStatus: 400, message: "La valoracion que quiere borrar no existe"}
+        return {statusCode: 400, message: "La valoracion que quiere borrar no existe"}
     }
 }
 
