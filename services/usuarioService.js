@@ -82,12 +82,12 @@ const getUsuarios = async () => {
 }
 
 const deleteUsuario = async (usuario) => {
-    const usuario = await Subasta.findOneAndDelete({ _id: usuario._id })
+    const usuarioFound = await Usuario.findOneAndDelete({_id: usuario._id})
 
-    if (usuario != null) {
-        return { codeStatus: 200, message: usuario.toJSON() }
-    } else {
-        return { codeStatus: 400, message: "El usuario que quiere borrar no existe" }
+    if (usuarioFound != null){
+        return {codeStatus: 200, message: usuarioFound.toJSON()}
+    }else{
+        return {codeStatus: 400, message: "El usuario que quiere borrar no existe"}
     }
 
 }

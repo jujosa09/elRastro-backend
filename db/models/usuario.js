@@ -1,6 +1,6 @@
 const {Schema, model} = require('mongoose')
 
-const subastaSchema = new Schema({
+const usuarioSchema = new Schema({
     _id: Number,
     nombre: String,
     valoracion: Number
