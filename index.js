@@ -18,7 +18,7 @@ app.use('/subasta', routerSubasta)
 app.use('/valoracion', routerValoracion)
 app.use('/upload', routerImage)
 
-const port = 5000
+const port = 5001
 app.listen(port, () => {
     console.log('Listening on port ' + port)
 })
