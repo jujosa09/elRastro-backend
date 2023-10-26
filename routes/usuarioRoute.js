@@ -4,9 +4,9 @@ const { createUsuarioController, getUsuarioByIdController } = require('../contro
 
 const routerUsuario = express.Router()
 
-//routerSubasta.post('/', createSubastaController)
-//routerSubasta.get('/', getSubastaByIdController)
-//routerSubasta.get('/:id', getSubastaByIdController)
+//routerUsuario.post('/', createUsuarioController)
+//routerUsuario.get('/', getUsuarioByIdController)
+//routerUsuario.get('/:id', getUsuarioByIdController)
 
 
 module.exports = {
