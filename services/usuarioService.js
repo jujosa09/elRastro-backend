@@ -92,10 +92,27 @@ const deleteUsuario = async (usuario) => {
 
 }
 
+const updateUsuario = async(usuario) => {
+    const usuarioFound = await Usuario.find({})
+
+    if (usuarioFound != null){
+       
+        const savedUsuario = await Usuario.updateOne(
+            {_id: isObjectIdOrHexString(usuarioFound)},
+            {nombre : usuario.nombre}
+        );
+
+        return { statusCode: 200, message: savedUsuario };
+    }else{
+        return {codeStatus: 400, message: "El usuario que quiere borrar no existe"}
+    }
+}
+
 module.exports= {
     createUsuario,
     getUsuarioById,
     getUsuarioByNombre,
     getUsuarios,
-    deleteUsuario
+    deleteUsuario, 
+    updateUsuario
 };
