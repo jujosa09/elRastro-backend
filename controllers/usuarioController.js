@@ -1,10 +1,10 @@
-const { createUsuario, getUsuarioById, getUsuarioByNombre,getUsuarios, eliminarUsuario, actualizarUsuario} 
+const { createUsuario, getUsuarioById, getUsuarioByNombre,getUsuarios, deleteUsuario, updateUsuario} 
 = require('../services/usuarioService')
     
     
 
 const createUsuarioController = async (req, res, next) => {
-    const Usuario = req.body
+    const usuario = req.body
     console.log(usuario)
 
     if (!usuario){
@@ -30,15 +30,15 @@ const getUsuarioByIdController = async (req, res, next) => {
 }
 
 const deleteUsuarioController = async (req, res, next) => {
-
-    response = await eliminarUsuario(req.params.id)
+   
+    response = await deleteUsuario(req.params.id)
     res.status(response.statusCode).json(response.message)
     
 }
 
-const actualizarUsuarioController = async (req, res, next) => {
-
-    response = await actualizarUsuario(req.body)
+const updateUsuarioController = async (req, res, next) => {
+    console.log(req.params.id)
+    response = await updateUsuario(req.params.id, req.body.nombre)
     res.status(response.statusCode).json(response.message)
     
 }
@@ -49,5 +49,5 @@ module.exports = {
     createUsuarioController,
     getUsuarioByIdController,
     deleteUsuarioController,
-    actualizarUsuarioController
+    updateUsuarioController
 }

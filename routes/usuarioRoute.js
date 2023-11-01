@@ -4,9 +4,11 @@ const { createUsuarioController, getUsuarioByIdController, deleteUsuarioControll
 
 const routerUsuario = express.Router()
 
-//routerUsuario.post('/', createUsuarioController)
-//routerUsuario.get('/', getUsuarioByIdController)
-//routerUsuario.get('/:id', getUsuarioByIdController)
+routerUsuario.post('/', createUsuarioController)
+routerUsuario.get('/', getUsuarioByIdController)
+routerUsuario.get('/:id', getUsuarioByIdController)
+routerUsuario.delete('/:id', deleteUsuarioController)
+routerUsuario.put('/:id', updateUsuarioController)
 
 
 

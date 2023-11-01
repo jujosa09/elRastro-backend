@@ -15,9 +15,9 @@ async function nextIdUsuario() {
 const createUsuario = async (usuario) => {
     try {
         const usuarioFinded = await Usuario.find({});
-        const existedUsuario = usuarioFinded.map(usuario => usuario.toJSON());
+        const existedUsuarios = usuarioFinded.map(usuario => usuario.toJSON());
 
-        for (const existedUsuario of existedUsuario) {
+        for (const existedUsuario of existedUsuarios) {
             if (existedUsuario['nombre'] === usuario['nombre']) {
                 return { statusCode: 400, message: { error: "Ya existe una usuario con el mismo nombre" } };
             }
@@ -81,30 +81,32 @@ const getUsuarios = async () => {
     }
 }
 
-const deleteUsuario = async (usuario) => {
-    const usuarioFound = await Usuario.findOneAndDelete({_id: usuario._id})
-
-    if (usuarioFound != null){
-        return {codeStatus: 200, message: usuarioFound.toJSON()}
-    }else{
-        return {codeStatus: 400, message: "El usuario que quiere borrar no existe"}
+const deleteUsuario = async (id) => {
+    try{
+        const usuarioFound = await Usuario.findByIdAndDelete(id)
+        console.log(usuarioFound)
+        if (usuarioFound != null){
+            
+            return {codeStatus: 200, message: usuarioFound}
+        }else{
+            return {codeStatus: 400, message: "El usuario que quiere borrar no existe"}
+        }
+    }catch (error) {
+        console.error("Error en deleteUsuario: ", error);
+        return {statusCode: 500, message: {error: error}};
     }
 
 }
 
-const updateUsuario = async(usuario) => {
-    const usuarioFound = await Usuario.find({})
+const updateUsuario = async(id, nombre) => {
 
+    const usuarioFound = await Usuario.findByIdAndUpdate(id, { nombre: nombre });
+    console.log(usuarioFound)
+    console.log(nombre)
     if (usuarioFound != null){
-       
-        const savedUsuario = await Usuario.updateOne(
-            {_id: isObjectIdOrHexString(usuarioFound)},
-            {nombre : usuario.nombre}
-        );
-
-        return { statusCode: 200, message: savedUsuario };
+        return {codeStatus: 200, message: usuarioFound.toJSON()}
     }else{
-        return {codeStatus: 400, message: "El usuario que quiere borrar no existe"}
+        return {codeStatus: 400, message: "El usuario que quiere actualizar no existe"}
     }
 }
 
