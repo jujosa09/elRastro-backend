@@ -19,9 +19,11 @@ const createUsuarioController = async (req, res, next) => {
 } 
 
 const getUsuarioByIdController = async (req, res, next) => {
+    
     if(req.query.id){
         response = await getUsuarioById(req.query.id)
     }else if(req.query.nombre){
+        console.log(req.query.nombre)
         response = await getUsuarioByNombre(req.query.nombre)
     }else{
         response = await getUsuarios()
@@ -30,15 +32,18 @@ const getUsuarioByIdController = async (req, res, next) => {
 }
 
 const deleteUsuarioController = async (req, res, next) => {
-   
-    response = await deleteUsuario(req.params.id)
+    
+    const response = await deleteUsuario(req.query.id)
+    console.log(response)
+
     res.status(response.statusCode).json(response.message)
     
 }
 
 const updateUsuarioController = async (req, res, next) => {
-    console.log(req.params.id)
-    response = await updateUsuario(req.params.id, req.body.nombre)
+    
+    response = await updateUsuario(req.query.id, req.query.nombre)
+    
     res.status(response.statusCode).json(response.message)
     
 }

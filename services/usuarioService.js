@@ -27,7 +27,7 @@ const createUsuario = async (usuario) => {
         const newUsuario = new Usuario({
             _id: id,
             nombre: usuario.nombre,
-            valoracion: usuario.valoracion
+            valoracion: 0
         });
 
         const savedUsuario = await newUsuario.save();
@@ -55,7 +55,7 @@ const getUsuarioById = async (id) => {
 
 const getUsuarioByNombre = async (nombreUsuario) => {
     try {
-        const usuarioFinded = await Usuario.find({ usuario: nombreUsuario })
+        const usuarioFinded = await Usuario.find({ nombre: nombreUsuario })
         if (usuarioFinded.length !== 0) {
             return { statusCode: 200, message: usuarioFinded }
         } else {
@@ -82,33 +82,24 @@ const getUsuarios = async () => {
 }
 
 const deleteUsuario = async (id) => {
-    try{
-        const usuarioFound = await Usuario.findByIdAndDelete(id)
-        console.log(usuarioFound)
-        if (usuarioFound != null){
-            
-            return {codeStatus: 200, message: usuarioFound}
-        }else{
-            return {codeStatus: 400, message: "El usuario que quiere borrar no existe"}
-        }
-    }catch (error) {
-        console.error("Error en deleteUsuario: ", error);
-        return {statusCode: 500, message: {error: error}};
-    }
-
-}
-
-const updateUsuario = async(id, nombre) => {
-
-    const usuarioFound = await Usuario.findByIdAndUpdate(id, { nombre: nombre });
-    console.log(usuarioFound)
-    console.log(nombre)
+    const usuarioFound = await Usuario.findOneAndDelete({_id: id})
     if (usuarioFound != null){
-        return {codeStatus: 200, message: usuarioFound.toJSON()}
+        return {statusCode: 200, message: usuarioFound.toJSON()}
     }else{
-        return {codeStatus: 400, message: "El usuario que quiere actualizar no existe"}
+        return {statusCode: 400, message: "El usuario que quiere borrar no existe"}
     }
+
 }
+
+const updateUsuario = async (id, nombreUsuario) => {
+    const usuarioFound = await Usuario.findByIdAndUpdate(id, { nombre: nombreUsuario });
+
+    if (usuarioFound != null){
+        return {statusCode: 200, message: usuarioFound.toJSON()}
+    }else{
+        return {statusCode: 400, message: "El usuario que quiere actualizar no existe"}
+    }
+};
 
 module.exports= {
     createUsuario,
