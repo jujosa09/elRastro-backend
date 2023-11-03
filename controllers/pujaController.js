@@ -29,12 +29,12 @@ const guardarPuja = async (req, res) => {
                 Date(),
                 req.query.producto
             )
-            res.send({statusCode: 200, message: "Puja actualizada con éxito"});
+            res.status(200).send('Puja actualizada con éxito');
         } else {
-            const mensaje = await servicePuja.checkPuja(req.query.usuario, req.query.cantidad, req.query.producto);
+            const check = await servicePuja.checkPuja(req.query.usuario, req.query.cantidad, req.query.producto);
 
-            if (mensaje !== 'ok') {
-                res.status(200).send(mensaje);
+            if (check !== 'ok') {
+                res.status(200).send(check);
             } else {
                 const pujaCreada = await servicePuja.create(
                     req.query.usuario,

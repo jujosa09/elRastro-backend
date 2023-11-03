@@ -1,4 +1,6 @@
 const Puja = require('../db/models/puja');
+const ServiceProducto = require('./productoService');
+const serviceProducto = new ServiceProducto();
 
 class ServicePuja {
 
@@ -29,7 +31,7 @@ class ServicePuja {
     }
 
     async create(usuario, cantidad, fecha, producto) {
-        const res = await Puja.create(
+        const pujaCreada = await Puja.create(
             {
                 usuario: usuario,
                 cantidad: cantidad,
@@ -37,20 +39,34 @@ class ServicePuja {
                 producto: producto
             }
         );
-        return res;
+        await serviceProducto.updatePuja(producto, pujaCreada);
+        return pujaCreada;
     }
 
     async checkPuja(usuario, cantidad, producto) {
         const pujasProducto = await this.findByProduct(producto);
-        const pujaMasAlta = pujasProducto.slice(-1)[0];
+        const foundProducto = await serviceProducto.findById(producto);
 
-        if (pujaMasAlta.usuario === usuario) {
-            return 'Ya eres el usuario con la puja más alta para el producto ' + producto;
-        } else if (pujaMasAlta.cantidad > cantidad) {
-            return 'La puja no supera la puja más alta para el producto ' + producto;
-        } else {
-            return 'ok';
+        if(foundProducto.usuario === usuario) {
+            return 'Eres el propietario del producto ' + producto + ' y no puedes hacer pujas sobre él';
+        }else {
+            if (pujasProducto.length > 0) {
+                const pujaMasAlta = pujasProducto.slice(-1)[0];
+                if (pujaMasAlta.usuario === usuario) {
+                    return 'Ya eres el usuario con la puja más alta para el producto ' + producto;
+                } else if (pujaMasAlta.cantidad > cantidad) {
+                    return 'La puja no supera la puja más alta para el producto ' + producto;
+                } else {
+                    return 'ok';
+                }
+            }
         }
+
+        if (cantidad < foundProducto.precioInicial) {
+            return 'La cantidad a pujar debe ser mayor que el precio inicial del producto';
+        }
+
+        return 'ok';
     }
 
     async update(id, usuario, cantidad, fecha, producto) {
@@ -66,7 +82,6 @@ class ServicePuja {
     }
 
     async delete(id) {
-        // const puja = await this.findById(id);
         const res = await Puja.findByIdAndDelete(id);
         return res;
     }

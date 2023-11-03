@@ -1,0 +1,103 @@
+const Producto = require('../db/models/producto');
+const ServicePuja = require('./pujaService');
+// const servicePuja = new ServicePuja();
+
+class ServiceProducto {
+    constructor() {}
+
+    async findAll() {
+        const res = await Producto.find();
+        return res;
+    }
+
+    async findById(id) {
+        const res = await Producto.findById(id);
+        return res;
+    }
+
+    async findByNombre(nombre) {
+        const res = await Producto.find(
+            {
+                nombre: nombre
+            }
+        );
+        return res;
+    }
+
+    async findByUsuario(usuario) {
+        const res = await Producto.find(
+            {
+                usuario: usuario
+            }
+        );
+        return res;
+    }
+
+    async findByPrecio(precio) {
+        const res = await Producto.find(
+            {
+                precioActual: precio
+            }
+        );
+        return res;
+    }
+
+    async checkProducto(nombre, usuario) {
+        const productosUsuario = await this.findByUsuario(usuario);
+        let i = 0;
+        while (i < productosUsuario.length && productosUsuario[i].nombre !== nombre) {
+            i++;
+        }
+
+        return i < productosUsuario.length?
+            'Ya existe un producto con el mismo nombre para el usuario ' + usuario : 'ok';
+    }
+
+    async create(nombre, direccion, usuario, precioInicial, fechaCierre, descripcion, imagen) {
+        const res = await Producto.create(
+            {
+                nombre: nombre,
+                direccion: direccion,
+                usuario: usuario,
+                precioInicial: precioInicial,
+                fechaCierre: fechaCierre,
+                descripcion: descripcion,
+                precioActual: null,
+                imagen: imagen,
+                puja: {}
+            }
+        );
+        return res;
+    }
+
+    // HACER QUE SI UNA SUBASTA TIENE PUJAS NO SE PUEDA ACTUALIZAR
+
+    async update(id, nombre, direccion, descripcion, imagen) {
+        const res = await Producto.findByIdAndUpdate(id,
+            {
+                nombre: nombre,
+                direccion: direccion,
+                descripcion: descripcion,
+                imagen: imagen
+            }
+        );
+        return res;
+    }
+
+    async updatePuja(id, puja) {
+        const res = await Producto.findByIdAndUpdate(id,
+            {
+                puja: puja
+            }
+        );
+    }
+
+    async delete(id) {
+        const producto = await this.findById(id);
+        console.log(producto.puja);
+        //const res = await Producto.findByIdAndDelete(id);
+        return producto;
+    }
+}
+
+module.exports = ServiceProducto;

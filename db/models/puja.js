@@ -4,7 +4,7 @@ const pujaSchema = new Schema({
     usuario: String,
     cantidad: Number,
     fecha: Date,
-    producto: Number
+    producto: String
 })
 
 const Puja = model('Puja', pujaSchema)
