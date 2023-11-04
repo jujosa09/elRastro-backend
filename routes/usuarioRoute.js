@@ -6,7 +6,7 @@ const routerUsuario = express.Router()
 
 routerUsuario.post('/', createUsuarioController)
 routerUsuario.get('/', getUsuarioByIdController)
-routerUsuario.delete('/', deleteUsuarioController)
+routerUsuario.delete('/:id', deleteUsuarioController)
 routerUsuario.put('/', updateUsuarioController)
 
 

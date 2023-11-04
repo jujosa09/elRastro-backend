@@ -1,5 +1,5 @@
-const { createUsuario, getUsuarioById, getUsuarioByNombre,getUsuarios, deleteUsuario, updateUsuario} 
-= require('../services/usuarioService')
+const ServiceUsuario = require('../services/usuarioService');
+const serviceUsuario = new ServiceUsuario();
     
     
 
@@ -12,7 +12,7 @@ const createUsuarioController = async (req, res, next) => {
             error: "user no exists"
         })
     }
-    const response = await createUsuario(usuario)
+    const response = await serviceUsuario.createUsuario(usuario)
     console.log(response)
 
     res.status(response["statusCode"]).json(response["message"])
@@ -21,19 +21,22 @@ const createUsuarioController = async (req, res, next) => {
 const getUsuarioByIdController = async (req, res, next) => {
     
     if(req.query.id){
-        response = await getUsuarioById(req.query.id)
+        response = await serviceUsuario.getUsuarioById(req.query.id)
     }else if(req.query.nombre){
         console.log(req.query.nombre)
-        response = await getUsuarioByNombre(req.query.nombre)
-    }else{
-        response = await getUsuarios()
+        response = await serviceUsuario.getUsuarioByNombre(req.query.nombre)
+    }/*else if(req.query.valoracion){
+        console.log(req.query.valoracion)
+        response = await getUsuarioByValoracion(req.query.valoracion)
+    }*/else{
+        response = await serviceUsuario.getUsuarios()
     }
     res.status(response.statusCode).json(response.message)
 }
 
 const deleteUsuarioController = async (req, res, next) => {
     
-    const response = await deleteUsuario(req.query.id)
+    const response = await serviceUsuario.deleteUsuario(req.params.id)
     console.log(response)
 
     res.status(response.statusCode).json(response.message)
@@ -42,7 +45,7 @@ const deleteUsuarioController = async (req, res, next) => {
 
 const updateUsuarioController = async (req, res, next) => {
     
-    response = await updateUsuario(req.query.id, req.query.nombre)
+    response = await serviceUsuario.updateUsuario(req.query.id, req.query.nombre, req.body.valoracion)
     
     res.status(response.statusCode).json(response.message)
     
