@@ -1,6 +1,6 @@
 const Producto = require('../db/models/producto');
 const ServicePuja = require('./pujaService');
-// const servicePuja = new ServicePuja();
+const servicePuja = new ServicePuja();
 
 class ServiceProducto {
     constructor() {}
@@ -94,8 +94,7 @@ class ServiceProducto {
 
     async delete(id) {
         const producto = await this.findById(id);
-        console.log(producto.puja);
-        //const res = await Producto.findByIdAndDelete(id);
+        const res = await Producto.findByIdAndDelete(id);
         return producto;
     }
 }

@@ -3,7 +3,6 @@ const ServiceProducto = require('./productoService');
 const serviceProducto = new ServiceProducto();
 
 class ServicePuja {
-
     constructor() {}
 
     async findAll() {

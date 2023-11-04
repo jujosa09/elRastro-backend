@@ -21,26 +21,26 @@ const listarPujasPorProducto = async (req, res) => {
 
 const guardarPuja = async (req, res) => {
     try {
-        if (typeof req.query.id !== "undefined" && req.query.id !== null && req.query.id !== '') {
+        if (typeof req.body.id !== "undefined" && req.body.id !== null && req.body.id !== '') {
             const puja = await servicePuja.update(
-                req.query.id,
-                req.query.usuario,
-                req.query.cantidad,
+                req.body.id,
+                req.body.usuario,
+                req.body.cantidad,
                 Date(),
-                req.query.producto
+                req.body.producto
             )
             res.status(200).send('Puja actualizada con éxito');
         } else {
-            const check = await servicePuja.checkPuja(req.query.usuario, req.query.cantidad, req.query.producto);
+            const check = await servicePuja.checkPuja(req.body.usuario, req.body.cantidad, req.body.producto);
 
             if (check !== 'ok') {
                 res.status(200).send(check);
             } else {
                 const pujaCreada = await servicePuja.create(
-                    req.query.usuario,
-                    req.query.cantidad,
+                    req.body.usuario,
+                    req.body.cantidad,
                     Date(),
-                    req.query.producto
+                    req.body.producto
                 )
                 res.status(200).send('Puja creada con éxito');
             }

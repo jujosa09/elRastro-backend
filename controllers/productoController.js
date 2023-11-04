@@ -5,10 +5,10 @@ const listarProductos = async(req, res) => {
     try {
         if (typeof req.params.usuario !== "undefined" && req.params.usuario !== null && req.params.usuario !== '') {
             const productos = await serviceProducto.findByUsuario(req.params.usuario);
-            res.status(200).send(productos);
+            res.status(200).send({productos: productos});
         } else {
             const productos = await serviceProducto.findAll();
-            res.status(200).send(productos);
+            res.status(200).send({productos: productos});
         }
     } catch (error) {
         res.status(500).send({success: false, message: error.message});
@@ -17,7 +17,6 @@ const listarProductos = async(req, res) => {
 
 const guardarProducto = async(req, res) => {
     try {
-        console.log(req.body);
         if (typeof req.body.id !== "undefined" && req.body.id !== null && req.body.id !== '') {
             const producto = await serviceProducto.update(
                 req.body.id,
@@ -26,12 +25,12 @@ const guardarProducto = async(req, res) => {
                 req.body.descripcion,
                 req.body.imagen
             );
-            res.status(200).send('Producto actualizado con éxito');
+            res.status(200).send({message: 'Producto ' + req.body.id + ' actualizado con éxito', producto: producto});
         } else {
             const check = await serviceProducto.checkProducto(req.body.nombre, req.body.usuario);
 
             if (check !== 'ok') {
-                res.status(200).send(check);
+                res.status(204).send({message: check});
             } else {
                 const producto = await serviceProducto.create(
                     req.body.nombre,
@@ -42,7 +41,7 @@ const guardarProducto = async(req, res) => {
                     req.body.descripcion,
                     req.body.imagen
                 )
-                res.status(200).send(producto);
+                res.status(201).send({message: 'Producto creado con éxito', producto: producto});
             }
         }
     } catch (error) {
@@ -52,8 +51,8 @@ const guardarProducto = async(req, res) => {
 
 const borrarProducto = async (req, res) => {
     try {
-        await serviceProducto.delete(req.params.id);
-        res.status(200).send('Producto ' + req.params.id + ' borrado con éxito');
+        const producto = await serviceProducto.delete(req.params.id);
+        res.status(200).send({message: 'Producto ' + req.params.id + ' borrado con éxito', producto: producto});
     } catch (error) {
         res.status(500).send({success: false, message: error.message});
     }

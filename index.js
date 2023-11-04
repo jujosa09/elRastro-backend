@@ -20,9 +20,9 @@ app.get('/', (req, res, next) => {
 app.use('/subasta', routerSubasta)
 app.use('/valoracion', routerValoracion)
 app.use('/upload', routerImage)
-app.use('/puja', routerPuja)
+app.use('/pujas', routerPuja)
 app.use('/chat', routerChat)
-app.use('/producto', routerProducto)
+app.use('/productos', routerProducto)
 
 const port = 5001
 app.listen(port, () => {
