@@ -1,5 +1,5 @@
 const { createSubasta, getSubastaById, getSubastasByNombre, 
-getSubastasByUsuario, getSubastasByPrecio, getSubastas,eliminarSubasta, actualizarSubasta} = require('../services/subastaService')
+getSubastasByUsuario, getSubastasByPrecio, getSubastas,eliminarSubasta, actualizarSubasta,getCoordByCodPostal} = require('../services/subastaService')
 
 
 const createSubastaController = async (req, res, next) => {
@@ -15,6 +15,12 @@ const createSubastaController = async (req, res, next) => {
     console.log(response)
 
     res.status(response["statusCode"]).json(response["message"])
+}
+
+const getCoordinatesFromPostalCode = async (req, res, next) => {
+    response = await getCoordByCodPostal()
+    console.log(response)
+    res.status(200).send(response)
 }
 
 const getSubastaByIdController = async (req, res, next) => {
@@ -50,5 +56,6 @@ module.exports = {
     createSubastaController,
     getSubastaByIdController,
     deleteSubastaController,
-    actualizarSubastaController
+    actualizarSubastaController,
+    getCoordinatesFromPostalCode
 }
