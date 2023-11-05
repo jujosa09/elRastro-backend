@@ -9,6 +9,7 @@ const {routerPuja} = require('./routes/routerPuja')
 const {routerChat} = require('./routes/routerChat')
 const {routerProducto} = require('./routes/routerProducto')
 const {routerUsuario} = require('./routes/usuarioRoute')
+const {routerEmail} = require('./routes/emailRoute')
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
@@ -25,6 +26,7 @@ app.use('/pujas', routerPuja)
 app.use('/chat', routerChat)
 app.use('/productos', routerProducto)
 app.use('/usuario', routerUsuario)
+app.use('/email', routerEmail)
 
 const port = 5001
 app.listen(port, () => {
