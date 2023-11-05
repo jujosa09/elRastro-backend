@@ -67,4 +67,4 @@ const borrarProducto = async (req, res) => {
     }
 }
 
-module.exports = {listarProductos ,guardarProducto, borrarProducto}
+module.exports = {listarProductos, guardarProducto, borrarProducto}
