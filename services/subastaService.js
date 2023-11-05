@@ -96,25 +96,6 @@ const getCoordByCodPostal = async (codPostal) => {
         const json = await response.json()
       
         return { statusCode: 200, message: {lat:json.features[0].geometry.coordinates[0], long: json.features[0].geometry.coordinates[1] } }
-        /*
-        https.get(url, (resp)=>{
-            let data = '';
-
-            resp.on('data', (chunk) => {
-                data += chunk;
-              });
-
-            // The whole response has been received. Print out the result.
-            resp.on('end', () => {
-            let json = JSON.parse(data)
-            //json.features[0].geometry.coordinates.toString()
-            });
-        }).on("error", (err) => {
-            console.log("Error: " + err.message);
-        })
-        
-        console.log(result)
-        */
     } catch (error) {
         console.log("Error en getCoordByCodPostal: ", error)
         return { statusCode: 500, message: { error: error } }
