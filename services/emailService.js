@@ -17,7 +17,7 @@ const notifyPurchase = async (producto, comprador, vendedor) => {
         from: '"elRastro" ' + process.env.EMAIL_GMAIL,
         to: comprador,
         subject: "Cierre de subasta",
-        text: "Le notificamos que ganado la subasta de " + producto + "!. El vendedor tendrá que preparar y realizar el envío en 7 días. Un saludo"
+        text: "Le notificamos que ha ganado la subasta de " + producto + "!. El vendedor " + vendedor + " tendrá que preparar y realizar el envío en 7 días. Un saludo"
     }).then(info => {
         console.log({info})
     }).catch(error => {
