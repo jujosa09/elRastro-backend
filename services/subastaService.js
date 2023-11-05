@@ -1,5 +1,4 @@
 const Subasta = require('../db/models/subasta');
-const GeoJSON = require('geojson')
 const url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/29011.json?country=es&types=postcode&language=es&access_token=pk.eyJ1IjoibWlndWVsaXRvdGVwcm9ncmFtYSIsImEiOiJjbG9lb3lnZnIwbGl4MmtwbDEzNDN0YmZ1In0.XZ93RHOj4aUAzyjQTn7ykQ&limit=1'
 
 async function nextIdSubasta() {
