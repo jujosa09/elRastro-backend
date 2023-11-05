@@ -8,6 +8,7 @@ const {routerImage} = require('./routes/imageRoute')
 const {routerPuja} = require('./routes/routerPuja')
 const {routerChat} = require('./routes/routerChat')
 const {routerProducto} = require('./routes/routerProducto')
+const {routerUsuario} = require('./routes/usuarioRoute')
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
@@ -23,6 +24,7 @@ app.use('/upload', routerImage)
 app.use('/pujas', routerPuja)
 app.use('/chat', routerChat)
 app.use('/productos', routerProducto)
+app.use('/usuario', routerUsuario)
 
 const port = 5001
 app.listen(port, () => {
