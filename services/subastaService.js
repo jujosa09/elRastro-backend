@@ -1,12 +1,14 @@
 const Subasta = require('../db/models/subasta');
+const GeoJSON = require('geojson')
+const url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/29011.json?country=es&types=postcode&language=es&access_token=pk.eyJ1IjoibWlndWVsaXRvdGVwcm9ncmFtYSIsImEiOiJjbG9lb3lnZnIwbGl4MmtwbDEzNDN0YmZ1In0.XZ93RHOj4aUAzyjQTn7ykQ&limit=1'
 
 async function nextIdSubasta() {
     const ultimoDocumento = await Subasta.findOne({}, {}, { sort: { _id: -1 } });
-  
+
     let nuevoId = 1; // Valor predeterminado si no hay documentos existentes
-  
+
     if (ultimoDocumento) {
-      nuevoId = ultimoDocumento._id + 1;
+        nuevoId = ultimoDocumento._id + 1;
     }
 
     return nuevoId;
@@ -46,82 +48,115 @@ const createSubasta = async (subasta) => {
 };
 
 const getSubastaById = async (id) => {
-    try{
+    try {
         const subastaFinded = await Subasta.findById(id)
-        if(subastaFinded){
-            return {statusCode: 200, message: subastaFinded}
-        }else{
-            return {statusCode: 400, message: "No existe un objeto con id " + id}
+        if (subastaFinded) {
+            return { statusCode: 200, message: subastaFinded }
+        } else {
+            return { statusCode: 400, message: "No existe un objeto con id " + id }
         }
-    }catch (error) {
+    } catch (error) {
         console.error("Error en getSubastaById: ", error);
-        return {statusCode: 500, message: {error: error}};
+        return { statusCode: 500, message: { error: error } };
     }
 }
 
 const getSubastasByNombre = async (nombreProducto) => {
-    try{
-        const subastasFinded = await Subasta.find({producto: nombreProducto})
-        if(subastasFinded.length !== 0){
-            return {statusCode: 200, message: subastasFinded}
-        }else{
-            return {statusCode: 400, message: "No existe un objeto con nombre " + nombreProducto}
+    try {
+        const subastasFinded = await Subasta.find({ producto: nombreProducto })
+        if (subastasFinded.length !== 0) {
+            return { statusCode: 200, message: subastasFinded }
+        } else {
+            return { statusCode: 400, message: "No existe un objeto con nombre " + nombreProducto }
         }
-    }catch (error) {
+    } catch (error) {
         console.log("Error en getSubastaByNombre: ", error)
-        return {statusCode: 500, message: {error: error}}
+        return { statusCode: 500, message: { error: error } }
     }
 }
 
 const getSubastasByUsuario = async (nombreUsuario) => {
-    try{
-        const subastasFinded = await Subasta.find({usuario: nombreUsuario})
-        if(subastasFinded.length !== 0){
-            return {statusCode: 200, message: subastasFinded}
-        }else{
-            return {statusCode: 400, message: "No existe un objeto con usuario " + nombreUsuario}
+    try {
+        const subastasFinded = await Subasta.find({ usuario: nombreUsuario })
+        if (subastasFinded.length !== 0) {
+            return { statusCode: 200, message: subastasFinded }
+        } else {
+            return { statusCode: 400, message: "No existe un objeto con usuario " + nombreUsuario }
         }
-    }catch (error) {
+    } catch (error) {
         console.log("Error en getSubastaByUsuario: ", error)
-        return {statusCode: 500, message: {error: error}}
+        return { statusCode: 500, message: { error: error } }
     }
 }
 
+const getCoordByCodPostal = async (codPostal) => {
+    try {
+        console.log(codPostal)
+        const response = await fetch('https://api.mapbox.com/geocoding/v5/mapbox.places/'+codPostal+'.json?country=es&types=postcode&language=es&access_token=pk.eyJ1IjoibWlndWVsaXRvdGVwcm9ncmFtYSIsImEiOiJjbG9lb3lnZnIwbGl4MmtwbDEzNDN0YmZ1In0.XZ93RHOj4aUAzyjQTn7ykQ&limit=1')
+        const json = await response.json()
+      
+        return { statusCode: 200, message: {lat:json.features[0].geometry.coordinates[0], long: json.features[0].geometry.coordinates[1] } }
+        /*
+        https.get(url, (resp)=>{
+            let data = '';
+
+            resp.on('data', (chunk) => {
+                data += chunk;
+              });
+
+            // The whole response has been received. Print out the result.
+            resp.on('end', () => {
+            let json = JSON.parse(data)
+            //json.features[0].geometry.coordinates.toString()
+            });
+        }).on("error", (err) => {
+            console.log("Error: " + err.message);
+        })
+        
+        console.log(result)
+        */
+    } catch (error) {
+        console.log("Error en getCoordByCodPostal: ", error)
+        return { statusCode: 500, message: { error: error } }
+    }
+    
+}
+
 const getSubastasByPrecio = async (precio) => {
-    try{
-        const subastasFinded = await Subasta.find({precioActual: precio})
-        if(subastasFinded.length !== 0){
-            return {statusCode: 200, message: subastasFinded}
-        }else{
-            return {statusCode: 400, message: "No existe un objeto con precio " + precio}
+    try {
+        const subastasFinded = await Subasta.find({ precioActual: precio })
+        if (subastasFinded.length !== 0) {
+            return { statusCode: 200, message: subastasFinded }
+        } else {
+            return { statusCode: 400, message: "No existe un objeto con precio " + precio }
         }
-    }catch (error) {
+    } catch (error) {
         console.log("Error en getSubastaByPrecio: ", error)
-        return {statusCode: 500, message: {error: error}}
+        return { statusCode: 500, message: { error: error } }
     }
 }
 
 const getSubastas = async () => {
-    try{
+    try {
         const subastasFinded = await Subasta.find({})
-        if(subastasFinded.length !== 0){
-            return {statusCode: 200, message: subastasFinded}
-        }else{
-            return {statusCode: 400, message: "No existen subastas"}
+        if (subastasFinded.length !== 0) {
+            return { statusCode: 200, message: subastasFinded }
+        } else {
+            return { statusCode: 400, message: "No existen subastas" }
         }
-    }catch (error) {
+    } catch (error) {
         console.log("Error en getSubasta: ", error)
-        return {statusCode: 500, message: {error: error}}
+        return { statusCode: 500, message: { error: error } }
     }
 }
 
 const deleteSubasta = async (subasta) => {
-    const subastaFound = await Subasta.findOneAndDelete({_id: subasta._id})
+    const subastaFound = await Subasta.findOneAndDelete({ _id: subasta._id })
 
-    if (subastaFound != null){
-        return {codeStatus: 200, message: subastaFound.toJSON()}
-    }else{
-        return {codeStatus: 400, message: "La subasta que quiere borrar no existe"}
+    if (subastaFound != null) {
+        return { codeStatus: 200, message: subastaFound.toJSON() }
+    } else {
+        return { codeStatus: 400, message: "La subasta que quiere borrar no existe" }
     }
 
 }
@@ -134,5 +169,6 @@ module.exports = {
     getSubastasByUsuario,
     getSubastasByPrecio,
     getSubastas,
-    deleteSubasta
+    deleteSubasta,
+    getCoordByCodPostal
 };
