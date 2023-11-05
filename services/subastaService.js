@@ -1,4 +1,6 @@
 const Subasta = require('../db/models/subasta');
+const GeoJSON = require('geojson')
+const url = 'https://api.mapbox.com/geocoding/v5/mapbox.places/29011.json?country=es&types=postcode&language=es&access_token=pk.eyJ1IjoibWlndWVsaXRvdGVwcm9ncmFtYSIsImEiOiJjbG9lb3lnZnIwbGl4MmtwbDEzNDN0YmZ1In0.XZ93RHOj4aUAzyjQTn7ykQ&limit=1'
 
 async function nextIdSubasta() {
     const ultimoDocumento = await Subasta.findOne({}, {}, { sort: { _id: -1 } });
@@ -87,34 +89,36 @@ const getSubastasByUsuario = async (nombreUsuario) => {
     }
 }
 
-const getCoordByCodPostal = async () => {
+const getCoordByCodPostal = async (codPostal) => {
     try {
-        const https = require('https');
+        console.log(codPostal)
+        const response = await fetch('https://api.mapbox.com/geocoding/v5/mapbox.places/'+codPostal+'.json?country=es&types=postcode&language=es&access_token=pk.eyJ1IjoibWlndWVsaXRvdGVwcm9ncmFtYSIsImEiOiJjbG9lb3lnZnIwbGl4MmtwbDEzNDN0YmZ1In0.XZ93RHOj4aUAzyjQTn7ykQ&limit=1')
+        const json = await response.json()
+        return { statusCode: 200, message: json.features[0].geometry.coordinates }
+        /*
+        https.get(url, (resp)=>{
+            let data = '';
 
-        https.get('https://api.mapbox.com/geocoding/v5/mapbox.places/29011.json?country=es&types=postcode&language=es&access_token=pk.eyJ1IjoibWlndWVsaXRvdGVwcm9ncmFtYSIsImEiOiJjbG9lb3lnZnIwbGl4MmtwbDEzNDN0YmZ1In0.XZ93RHOj4aUAzyjQTn7ykQ', res => {
-            let data = [];
-            const headerDate = res.headers && res.headers.date ? res.headers.date : 'no response date';
-            console.log('Status Code:', res.statusCode);
-            console.log('Date in Response header:', headerDate);
+            resp.on('data', (chunk) => {
+                data += chunk;
+              });
 
-            res.on('data', chunk => {
-                data.push(chunk);
+            // The whole response has been received. Print out the result.
+            resp.on('end', () => {
+            let json = JSON.parse(data)
+            //json.features[0].geometry.coordinates.toString()
             });
-
-            res.on('end', () => {
-                console.log('Response ended: ');
-                const response = JSON.parse(Buffer.concat(data).toString());
-                console.log(response)
-                return { statusCode: 200, message: response }
-            });
-        }).on('error', err => {
-            console.log('Error: ', err.message);
-        });
-
+        }).on("error", (err) => {
+            console.log("Error: " + err.message);
+        })
+        
+        console.log(result)
+        */
     } catch (error) {
         console.log("Error en getCoordByCodPostal: ", error)
         return { statusCode: 500, message: { error: error } }
     }
+    
 }
 
 const getSubastasByPrecio = async (precio) => {

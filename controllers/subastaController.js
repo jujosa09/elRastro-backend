@@ -18,9 +18,8 @@ const createSubastaController = async (req, res, next) => {
 }
 
 const getCoordinatesFromPostalCode = async (req, res, next) => {
-    response = await getCoordByCodPostal()
-    console.log(response)
-    res.status(200).send(response)
+    const coordenadas = await getCoordByCodPostal(req.params.codPostal)
+    res.status(200).json(coordenadas)
 }
 
 const getSubastaByIdController = async (req, res, next) => {
