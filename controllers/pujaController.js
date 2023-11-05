@@ -1,6 +1,9 @@
 const ServicePuja = require('../services/pujaService');
 const servicePuja = new ServicePuja();
 
+const ServiceProducto = require('../services/productoService');
+const serviceProducto = new ServiceProducto();
+
 const listarPujas = async (req, res) => {
     try {
         const pujas = await servicePuja.findAll();
@@ -29,7 +32,7 @@ const guardarPuja = async (req, res) => {
                 Date(),
                 req.body.producto
             )
-            res.status(200).send('Puja actualizada con éxito');
+            res.status(200).send({message: 'Puja actualizada con éxito', puja: puja});
         } else {
             const check = await servicePuja.checkPuja(req.body.usuario, req.body.cantidad, req.body.producto);
 
@@ -42,7 +45,8 @@ const guardarPuja = async (req, res) => {
                     Date(),
                     req.body.producto
                 )
-                res.status(200).send('Puja creada con éxito');
+                await serviceProducto.updatePuja(req.body.producto, pujaCreada);
+                res.status(201).send({message: 'Puja creada con éxito', puja: pujaCreada});
             }
         }
     } catch (error) {

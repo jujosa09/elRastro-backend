@@ -1,5 +1,5 @@
 const Puja = require('../db/models/puja');
-const ServiceProducto = require('./productoService');
+const ServiceProducto = require('../services/productoService')
 const serviceProducto = new ServiceProducto();
 
 class ServicePuja {
@@ -38,7 +38,6 @@ class ServicePuja {
                 producto: producto
             }
         );
-        await serviceProducto.updatePuja(producto, pujaCreada);
         return pujaCreada;
     }
 
@@ -53,7 +52,7 @@ class ServicePuja {
                 const pujaMasAlta = pujasProducto.slice(-1)[0];
                 if (pujaMasAlta.usuario === usuario) {
                     return 'Ya eres el usuario con la puja más alta para el producto ' + producto;
-                } else if (pujaMasAlta.cantidad > cantidad) {
+                } else if (pujaMasAlta.cantidad >= cantidad) {
                     return 'La puja no supera la puja más alta para el producto ' + producto;
                 } else {
                     return 'ok';
@@ -80,6 +79,15 @@ class ServicePuja {
         return res;
     }
 
+    async deletePujasByProduct(producto) {
+        const res = await Puja.deleteMany(
+            {
+                producto: producto
+            }
+        );
+        return res;
+    }
+
     async delete(id) {
         const res = await Puja.findByIdAndDelete(id);
         return res;
@@ -87,3 +95,4 @@ class ServicePuja {
 }
 
 module.exports = ServicePuja;
+

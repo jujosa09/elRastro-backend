@@ -1,6 +1,4 @@
 const Producto = require('../db/models/producto');
-const ServicePuja = require('./pujaService');
-const servicePuja = new ServicePuja();
 
 class ServiceProducto {
     constructor() {}
@@ -70,7 +68,15 @@ class ServiceProducto {
         return res;
     }
 
-    // HACER QUE SI UNA SUBASTA TIENE PUJAS NO SE PUEDA ACTUALIZAR
+    async checkProductoActualizable(id) {
+        const producto = await this.findById(id);
+        // COMPROBAR SI CUANDO SE ELIMINA ALGUNA PUJA LA CONDICIÓN SIGUE SIENDO VERDAD
+        if (!producto.puja) {
+            return 'ok';
+        } else {
+            return 'No se puede actualizar el producto ' + id + ' porque ya han pujado sobre él';
+        }
+    }
 
     async update(id, nombre, direccion, descripcion, imagen) {
         const res = await Producto.findByIdAndUpdate(id,
