@@ -94,7 +94,8 @@ const getCoordByCodPostal = async (codPostal) => {
         console.log(codPostal)
         const response = await fetch('https://api.mapbox.com/geocoding/v5/mapbox.places/'+codPostal+'.json?country=es&types=postcode&language=es&access_token=pk.eyJ1IjoibWlndWVsaXRvdGVwcm9ncmFtYSIsImEiOiJjbG9lb3lnZnIwbGl4MmtwbDEzNDN0YmZ1In0.XZ93RHOj4aUAzyjQTn7ykQ&limit=1')
         const json = await response.json()
-        return { statusCode: 200, message: json.features[0].geometry.coordinates }
+      
+        return { statusCode: 200, message: {lat:json.features[0].geometry.coordinates[0], long: json.features[0].geometry.coordinates[1] } }
         /*
         https.get(url, (resp)=>{
             let data = '';
