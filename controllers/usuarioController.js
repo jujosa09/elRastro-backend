@@ -1,10 +1,6 @@
 const ServiceUsuario = require('../services/usuarioService');
 const serviceUsuario = new ServiceUsuario();
 
-
-    
-    
-
 const createUsuarioController = async (req, res, next) => {
     const usuario = req.body
 
@@ -24,10 +20,7 @@ const getUsuarioByIdController = async (req, res, next) => {
         response = await serviceUsuario.getUsuarioById(req.query.id)
     }else if(req.query.nombre){
         response = await serviceUsuario.getUsuarioByNombre(req.query.nombre)
-    }/*else if(req.query.valoracion){
-        console.log(req.query.valoracion)
-        response = await getUsuarioByValoracion(req.query.valoracion)
-    }*/else{
+    }else{
         response = await serviceUsuario.getUsuarios()
     }
     res.status(response.statusCode).json(response.message)
@@ -46,6 +39,12 @@ const updateUsuarioController = async (req, res, next) => {
     
     res.status(response.statusCode).json(response.message)
     
+}
+
+const valorarUsuario = async (req, res, next) => {
+    response = await serviceUsuario.valorarUsuario(req.query.valoracion, req.query.valorado, req.query.valorador)
+
+    res.status(response.statusCode).json(response.message)
 }
 
 module.exports = {

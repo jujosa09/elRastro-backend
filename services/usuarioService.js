@@ -39,11 +39,11 @@ class ServiceUsuario {
 
     async getUsuarioById(id) {
         try {
-            const usuarioFinded = await Usuario.findById(id)
-            if (usuarioFinded) {
-                return { statusCode: 200, message: usuarioFinded }
+            const foundUsuario = await Usuario.findById(id)
+            if (foundUsuario) {
+                return { statusCode: 200, message: foundUsuario }
             } else {
-                return { statusCode: 400, message: "No existe un usuario con id " + id }
+                return { statusCode: 404, message: "No existe un usuario con id " + id }
             }
         } catch (error) {
             console.error("Error en getUsuarioById: ", error);
@@ -95,15 +95,35 @@ class ServiceUsuario {
         
     
     }
-    
+
     async updateUsuario(id, nombreUsuario, valoracion) {
         const usuarioFound = await Usuario.findByIdAndUpdate(id, { nombre: nombreUsuario, valoracion: valoracion });
         const usuarioUpdate = await Usuario.findById(id);
-        console.log(usuarioUpdate)
         if (usuarioFound != null){
             return {statusCode: 200, message: usuarioUpdate.toJSON()}
         }else{
             return {statusCode: 400, message: "El usuario que quiere actualizar no existe"}
+        }
+    }
+
+    async valorarUsuario(valoracion, usuarioValorado, usuarioValorador, producto) {
+        const foundValorado = await Usuario.find({nombre: usuarioValorado})
+        const foundValorador = await Usuario.find({nombre: usuarioValorador})
+        const foundProducto = await serviceProducto.findById(producto);
+        if (foundValorado == null) {
+            return {statusCode: 404, message: "El usuario que se quiere valorar no existe"}
+        } else if (foundValorador == null) {
+            return {statusCode: 404, message: "El usuario que valora no existe"}
+        } else if (producto == null){
+            return {statusCOde: 404, message: "El producto sobre el que se quiere valorar no existe"}
+        }else{
+            //const jsons = {foundValorado.valoracion, valoracion}
+            const res = Usuario.findByIdAndUpdate(foundValorado.id, {
+                valorador: usuarioValorador.nombre,
+                //valoracion: jsons
+            }
+            );
+            return {statusCode: 200}
         }
     }
 
