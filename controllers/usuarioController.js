@@ -1,5 +1,7 @@
 const ServiceUsuario = require('../services/usuarioService');
 const serviceUsuario = new ServiceUsuario();
+
+
     
     
 
@@ -35,7 +37,6 @@ const getUsuarioByIdController = async (req, res, next) => {
 }
 
 const deleteUsuarioController = async (req, res, next) => {
-    
     const response = await serviceUsuario.deleteUsuario(req.params.id)
     console.log(response)
 

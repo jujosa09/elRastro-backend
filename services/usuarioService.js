@@ -1,16 +1,8 @@
 const Usuario = require('../db/models/usuario');
 
-async function nextIdUsuario() {
-    const ultimoDocumento = await Usuario.findOne({}, {}, { sort: { _id: -1 } });
+const ServiceProducto = require('../services/productoService');
+const serviceProducto = new ServiceProducto();
 
-    let nuevoId = 1; // Valor predeterminado si no hay documentos existentes
-
-    if (ultimoDocumento) {
-        nuevoId = ultimoDocumento._id + 1;
-    }
-
-    return nuevoId;
-}
 
 class ServiceUsuario {
     constructor() {}
@@ -27,16 +19,17 @@ class ServiceUsuario {
                     return { statusCode: 400, message: { error: "Ya existe una usuario con el mismo nombre" } };
                 }
             }
-            const id = await nextIdUsuario()
-            console.log(id)
-            const newUsuario = new Usuario({
-                _id: id,
-                nombre: usuario.nombre,
-                valoracion: {}
-            });
-    
-            const savedUsuario = await newUsuario.save();
-            return { statusCode: 200, message: savedUsuario };
+
+            const res = await Usuario.create(
+                {
+                    nombre: usuario.nombre,
+                    correo: usuario.correo,
+                    valoracion: {}
+                }
+            )
+
+
+            return { statusCode: 200, message: res };
         } catch (error) {
             // Manejo de errores, puedes personalizar según tus necesidades
             console.error("Error en createUsuario:", error);
@@ -78,7 +71,7 @@ class ServiceUsuario {
             if (usuarioFinded.length !== 0) {
                 return { statusCode: 200, message: usuarioFinded }
             } else {
-                return { statusCode: 400, message: "No existen usuarios" }
+                return { statusCode: 204, message: "No existen usuarios" }
             }
         } catch (error) {
             console.log("Error en getUsuario: ", error)
@@ -87,12 +80,19 @@ class ServiceUsuario {
     }
 
     async deleteUsuario(id) {
-        const usuarioFound = await Usuario.findOneAndDelete(id)
-        if (usuarioFound != null){
-            return {statusCode: 200, message: usuarioFound.toJSON()}
+        const usuarioFound = await Usuario.findById(id);
+        if((await serviceProducto.findByUsuario(usuarioFound.nombre)).length !== 0){
+            return { statusCode: 400, message: "Tienes productos en activo" }
         }else{
-            return {statusCode: 400, message: "El usuario que quiere borrar no existe"}
+            const usuarioFound = await Usuario.findOneAndDelete(id);
+
+            if (usuarioFound != null){
+                return {statusCode: 200, message: usuarioFound.toJSON()}
+            }else{
+                return {statusCode: 400, message: "El usuario que quiere borrar no existe"}
+            }
         }
+        
     
     }
     

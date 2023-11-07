@@ -1,8 +1,8 @@
 const {Schema, model} = require('mongoose')
 
 const usuarioSchema = new Schema({
-    _id: Number,
     nombre: String,
+    correo: String,
     valoracion: JSON
 })
 
