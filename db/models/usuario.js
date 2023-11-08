@@ -3,7 +3,7 @@ const {Schema, model} = require('mongoose')
 const usuarioSchema = new Schema({
     nombre: String,
     correo: String,
-    valoracion: JSON
+    valoracion: [JSON]
 })
 
 const Usuario = model('Usuario', usuarioSchema)

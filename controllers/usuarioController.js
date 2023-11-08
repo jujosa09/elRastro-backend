@@ -20,6 +20,8 @@ const getUsuarioByIdController = async (req, res, next) => {
         response = await serviceUsuario.getUsuarioById(req.query.id)
     }else if(req.query.nombre){
         response = await serviceUsuario.getUsuarioByNombre(req.query.nombre)
+    }else if(req.query.correo){
+        response = await serviceUsuario.getUsuarioByCorreo(req.query.correo)
     }else{
         response = await serviceUsuario.getUsuarios()
     }
@@ -34,15 +36,20 @@ const deleteUsuarioController = async (req, res, next) => {
 }
 
 const updateUsuarioController = async (req, res, next) => {
+    if(req.body.valoracion){
+        response = await serviceUsuario.valorarUsuario(req.body.valoracion, req.query.valorado, req.query.valorador, req.query.producto)
+    }else{
+        response = await serviceUsuario.updateUsuario(req.query.id, req.query.nombre, req.query.correo)
+    }
     
-    response = await serviceUsuario.updateUsuario(req.query.id, req.query.nombre, req.body.valoracion)
+    
     
     res.status(response.statusCode).json(response.message)
     
 }
 
-const valorarUsuario = async (req, res, next) => {
-    response = await serviceUsuario.valorarUsuario(req.query.valoracion, req.query.valorado, req.query.valorador)
+const valorarUsuarioController = async (req, res, next) => {
+    
 
     res.status(response.statusCode).json(response.message)
 }
@@ -51,5 +58,6 @@ module.exports = {
     createUsuarioController,
     getUsuarioByIdController,
     deleteUsuarioController,
-    updateUsuarioController
+    updateUsuarioController,
+    valorarUsuarioController
 }

@@ -24,7 +24,6 @@ class ServiceUsuario {
                 {
                     nombre: usuario.nombre,
                     correo: usuario.correo,
-                    valoracion: {}
                 }
             )
 
@@ -65,6 +64,20 @@ class ServiceUsuario {
         }
     }
 
+    async getUsuarioByCorreo(correo) {
+        try {
+            const usuarioFinded = await Usuario.find({ correo: correo })
+            if (usuarioFinded.length !== 0) {
+                return { statusCode: 200, message: usuarioFinded }
+            } else {
+                return { statusCode: 400, message: "No existe un usuario con correo " + correo }
+            }
+        } catch (error) {
+            console.log("Error en getUsuarioByCorreo: ", error)
+            return { statusCode: 500, message: { error: error } }
+        }
+    }
+
     async getUsuarios() {
         try {
             const usuarioFinded = await Usuario.find({})
@@ -82,7 +95,7 @@ class ServiceUsuario {
     async deleteUsuario(id) {
         const usuarioFound = await Usuario.findById(id);
         if((await serviceProducto.findByUsuario(usuarioFound.nombre)).length !== 0){
-            return { statusCode: 400, message: "Tienes productos en activo" }
+            return { statusCode: 400, message: "No es posible borrar el usuario porque tiene productos en activo" }
         }else{
             const usuarioFound = await Usuario.findOneAndDelete(id);
 
@@ -96,8 +109,8 @@ class ServiceUsuario {
     
     }
 
-    async updateUsuario(id, nombreUsuario, valoracion) {
-        const usuarioFound = await Usuario.findByIdAndUpdate(id, { nombre: nombreUsuario, valoracion: valoracion });
+    async updateUsuario(id, nombreUsuario, correo) {
+        const usuarioFound = await Usuario.findByIdAndUpdate(id, { nombre: nombreUsuario, correo: correo});
         const usuarioUpdate = await Usuario.findById(id);
         if (usuarioFound != null){
             return {statusCode: 200, message: usuarioUpdate.toJSON()}
@@ -110,20 +123,37 @@ class ServiceUsuario {
         const foundValorado = await Usuario.find({nombre: usuarioValorado})
         const foundValorador = await Usuario.find({nombre: usuarioValorador})
         const foundProducto = await serviceProducto.findById(producto);
+
         if (foundValorado == null) {
             return {statusCode: 404, message: "El usuario que se quiere valorar no existe"}
         } else if (foundValorador == null) {
             return {statusCode: 404, message: "El usuario que valora no existe"}
-        } else if (producto == null){
+        } else if (foundProducto == null){
             return {statusCOde: 404, message: "El producto sobre el que se quiere valorar no existe"}
         }else{
-            //const jsons = {foundValorado.valoracion, valoracion}
-            const res = Usuario.findByIdAndUpdate(foundValorado.id, {
-                valorador: usuarioValorador.nombre,
-                //valoracion: jsons
+
+            const nuevaValoracion = {
+                    valorador: foundValorador[0].nombre,
+                    rating: valoracion.rating,
+                    descripcion: valoracion.descripcion,
+                    producto: foundProducto.id
             }
-            );
-            return {statusCode: 200}
+            
+            const usuarioEncontrado = foundValorado[0].valoracion.filter((valoracion) => valoracion.producto === foundProducto.id);
+
+            if(usuarioEncontrado.length !== 0){
+                return {statusCode: 404, message: "A este usuario ya se le ha valorado por este producto"}
+            }else{
+                const usuarioFound  = await Usuario.findByIdAndUpdate(foundValorado[0].id, {$push: {valoracion: nuevaValoracion}});
+                const usuarioValorado = await Usuario.findById(foundValorado[0].id);
+                if (usuarioValorado != null){
+                    return {statusCode: 200, message: usuarioValorado.toJSON()}
+                }else{
+                    return {statusCode: 400, message: "La valoración que quiere hacer no es posible"}
+                }
+            }
+           
+
         }
     }
 
