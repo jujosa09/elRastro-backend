@@ -51,13 +51,20 @@ const deleteUsuarioController = async (req, res, next) => {
 
 const updateUsuarioController = async (req, res, next) => {
     try{
-        if(req.body.valoracion){
-            response = await serviceUsuario.valorarUsuario(req.body.valoracion, req.query.valorado, req.query.valorador, req.query.producto)
+        if(typeof req.body.valoracion !== "undefined" && req.body.valoracion !== null){
+            const response = await serviceUsuario.checkValoracion(req.body.valoracion, req.body.valorado, req.body.valorador, req.body.producto)
+            if(response !== "ok"){
+                res.status(400).send(response);
+            }else{
+                const usuario = await serviceUsuario.valorar(req.body.valoracion, req.body.valorado, req.body.valorador, req.body.producto)
+                console.log(usuario)
+                res.status(200).send({usuario: usuario});
+            }
         }else{
-            response = await serviceUsuario.updateUsuario(req.query.id, req.query.nombre, req.query.correo)
+            response = await serviceUsuario.updateUsuario(req.body.id, req.body.nombre, req.body.correo)
+            res.status(200).send({usuario: response});
         }
 
-        res.status(200).send({usuario: response});
     }catch(error){
         res.status(500).send({success: false, message: error.message});
     }

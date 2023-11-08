@@ -104,18 +104,32 @@ class ServiceUsuario {
     }
 
     async updateUsuario(id, nombreUsuario, correo) {
-        const usuarioFound = await Usuario.findByIdAndUpdate(id, { nombre: nombreUsuario, correo: correo});
+        const foundUsuario = await Usuario.findByIdAndUpdate(id, { nombre: nombreUsuario, correo: correo});
         const usuarioUpdate = await Usuario.findById(id);
-        if (usuarioFound != null){
+        if (foundUsuario != null){
             return usuarioUpdate.toJSON();
         }else{
             return "El usuario que quiere actualizar no existe";
         }
     }
 
-    async valorarUsuario(valoracion, usuarioValorado, usuarioValorador, producto) {
-        const foundValorado = await Usuario.find({nombre: usuarioValorado})
-        const foundValorador = await Usuario.find({nombre: usuarioValorador})
+    async valorar(valoracion, usuarioValorado, usuarioValorador, producto){
+        const foundValorado = await Usuario.findById(usuarioValorado)
+        const foundValorador = await Usuario.findById(usuarioValorador)
+        const nuevaValoracion = {
+            valorador: foundValorador.nombre,
+            puntuacion: valoracion.puntuacion,
+            descripcion: valoracion.descripcion,
+            producto: producto
+        }
+
+        const foundUsuario  = await Usuario.findByIdAndUpdate(usuarioValorado, {$push: {valoracion: nuevaValoracion}});
+        return foundUsuario.toJSON();
+    }
+
+    async checkValoracion(valoracion, usuarioValorado, usuarioValorador, producto) {
+        const foundValorado = await Usuario.findById(usuarioValorado)
+        const foundValorador = await Usuario.findById(usuarioValorador)
         const foundProducto = await serviceProducto.findById(producto);
 
         if (foundValorado == null) {
@@ -126,58 +140,15 @@ class ServiceUsuario {
             return "El producto sobre el que se quiere valorar no existe";
         }else{
 
-            const nuevaValoracion = {
-                    valorador: foundValorador[0].nombre,
-                    rating: valoracion.rating,
-                    descripcion: valoracion.descripcion,
-                    producto: foundProducto.id
-            }
-            
-            const usuarioEncontrado = foundValorado[0].valoracion.filter((valoracion) => valoracion.producto === foundProducto.id);
+            const foundValoracion = foundValorado.valoracion.filter((val) => val.producto === producto && val.valorador === foundValorador.nombre);
 
-            if(usuarioEncontrado.length !== 0){
+            if(foundValoracion.length !== 0){
                 return "A este usuario ya se le ha valorado por este producto";
-            }else{
-                const usuarioFound  = await Usuario.findByIdAndUpdate(foundValorado[0].id, {$push: {valoracion: nuevaValoracion}});
-                const usuarioValorado = await Usuario.findById(foundValorado[0].id);
-                if (usuarioValorado != null){
-                    return usuarioValorado.toJSON();
-                }else{
-                    return "La valoración que quiere hacer no es posible";
-                }
             }
-           
-
+            return "ok"
         }
     }
 
 }
-
-
-
-
-
-
-
-
-
-/*const getUsuarioByValoracion = async (valoracion) => {
-    try{
-        const valoracionFound = await Valoracion.find({rating: valoracion})
-        if(valoracionFound.length !== 0){
-            return { statusCode: 200, message: valoracionFound.usuario}
-        }else {
-            return { statusCode: 400, message: "No existe un usuario con valoracion " + valoracion }
-        }
-    } catch (error) {
-        console.log("Error en getUsuarioByValoracion: ", error)
-        return { statusCode: 500, message: { error: error } }
-    }
-    
-}*/
-
-
-
-
 
 module.exports = ServiceUsuario;
