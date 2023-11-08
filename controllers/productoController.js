@@ -6,13 +6,30 @@ const servicePuja = new ServicePuja();
 
 const listarProductos = async(req, res) => {
     try {
-        if (typeof req.params.usuario !== "undefined" && req.params.usuario !== null && req.params.usuario !== '') {
+        if (typeof req.params.usuario !== 'undefined' && req.params.usuario !== null && req.params.usuario !== '') {
             const productos = await serviceProducto.findByUsuario(req.params.usuario);
             res.status(200).send({productos: productos});
         } else {
             const productos = await serviceProducto.findAll();
             res.status(200).send({productos: productos});
         }
+    } catch (error) {
+        res.status(500).send({success: false, message: error.message});
+    }
+}
+
+const filtrarProductos = async(req, res) => {
+    try {
+        const productos = await serviceProducto.filterProductos(req.body.nombre, req.body.descripcion);
+        res.status(200).send({productos: productos});
+    } catch (error) {
+        res.status(500).send({success: false, message: error.message});
+    }
+}
+
+const listarProductosPorPujasUsuario = async(req, res) => {
+    try {
+        const pujas = await servicePuja.findByUser(req.params.user);
     } catch (error) {
         res.status(500).send({success: false, message: error.message});
     }
@@ -60,11 +77,16 @@ const guardarProducto = async(req, res) => {
 const borrarProducto = async (req, res) => {
     try {
         const producto = await serviceProducto.delete(req.params.id);
-        await servicePuja.deletePujasByProduct(req.params.id);
-        res.status(200).send({message: 'Producto ' + req.params.id + ' borrado con éxito', producto: producto});
+        if (producto) {
+            await servicePuja.deletePujasByProduct(req.params.id);
+            res.status(200).send({message: 'Producto ' + req.params.id + ' borrado con éxito', producto: producto});
+        } else {
+            res.status(200).send({message: 'No existe el producto ' + req.params.id});
+        }
+
     } catch (error) {
         res.status(500).send({success: false, message: error.message});
     }
 }
 
-module.exports = {listarProductos, guardarProducto, borrarProducto}
+module.exports = {listarProductos, guardarProducto, borrarProducto, filtrarProductos}

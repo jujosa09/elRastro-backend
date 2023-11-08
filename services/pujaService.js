@@ -29,23 +29,44 @@ class ServicePuja {
         return res;
     }
 
-    async create(usuario, cantidad, fecha, producto) {
+    async findByUserAndProduct(usuario, producto) {
+        const res = Puja.find(
+            {
+                usuario: usuario,
+                producto: producto
+            }
+        );
+        return res;
+    }
+    
+    async create(usuario, cantidad, producto) {
         const pujaCreada = await Puja.create(
             {
                 usuario: usuario,
                 cantidad: cantidad,
-                fecha: fecha,
+                fecha: Date(),
                 producto: producto
             }
         );
         return pujaCreada;
     }
 
+    /**
+     * Comprueba que la puja que se quiere realizar por el producto es válida.
+     *
+     * La puja se considera inválida cuando:
+     *  - El pujador es el propietario del producto.
+     *  - El pujador ya es quien tiene la puja más alta sobre el producto.
+     *  - La puja no supera la cantidad más alta para el producto.
+     * @param usuario
+     * @param cantidad
+     * @param producto
+     */
     async checkPuja(usuario, cantidad, producto) {
         const pujasProducto = await this.findByProduct(producto);
         const foundProducto = await serviceProducto.findById(producto);
 
-        if(foundProducto.usuario === usuario) {
+        if (foundProducto.usuario === usuario) {
             return 'Eres el propietario del producto ' + producto + ' y no puedes hacer pujas sobre él';
         }else {
             if (pujasProducto.length > 0) {

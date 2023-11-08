@@ -1,7 +1,5 @@
 const ServiceUsuario = require('../services/usuarioService');
 const serviceUsuario = new ServiceUsuario();
-    
-    
 
 const createUsuarioController = async (req, res, next) => {
     const usuario = req.body
