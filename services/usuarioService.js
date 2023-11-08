@@ -16,7 +16,7 @@ class ServiceUsuario {
     
             for (const existedUsuario of existedUsuarios) {
                 if (existedUsuario['nombre'] === usuario['nombre']) {
-                    return { statusCode: 400, message: { error: "Ya existe una usuario con el mismo nombre" } };
+                    return "Ya existe una usuario con el mismo nombre";
                 }
             }
 
@@ -28,11 +28,9 @@ class ServiceUsuario {
             )
 
 
-            return { statusCode: 200, message: res };
+            return res;
         } catch (error) {
-            // Manejo de errores, puedes personalizar según tus necesidades
-            console.error("Error en createUsuario:", error);
-            return { statusCode: 500, message: { error: error } };
+            return error;
         }
     }
 
@@ -40,69 +38,65 @@ class ServiceUsuario {
         try {
             const foundUsuario = await Usuario.findById(id)
             if (foundUsuario) {
-                return { statusCode: 200, message: foundUsuario }
+                return foundUsuario;
             } else {
-                return { statusCode: 404, message: "No existe un usuario con id " + id }
+                return "No existe un usuario con id ";
             }
         } catch (error) {
-            console.error("Error en getUsuarioById: ", error);
-            return { statusCode: 500, message: { error: error } };
+            return error;
         }
     }
 
     async getUsuarioByNombre(nombreUsuario) {
         try {
-            const usuarioFinded = await Usuario.find({ nombre: nombreUsuario })
-            if (usuarioFinded.length !== 0) {
-                return { statusCode: 200, message: usuarioFinded }
+            const usuarioFound = await Usuario.find({ nombre: nombreUsuario })
+            if (usuarioFound.length !== 0) {
+                return usuarioFound;
             } else {
-                return { statusCode: 400, message: "No existe un usuario con nombre " + nombreUsuario }
+                return "No existe un usuario con nombre " + nombreUsuario;
             }
         } catch (error) {
-            console.log("Error en getUsuarioByNombre: ", error)
-            return { statusCode: 500, message: { error: error } }
+            return error;
         }
     }
 
     async getUsuarioByCorreo(correo) {
         try {
-            const usuarioFinded = await Usuario.find({ correo: correo })
-            if (usuarioFinded.length !== 0) {
-                return { statusCode: 200, message: usuarioFinded }
+            const usuarioFound = await Usuario.find({ correo: correo })
+            if (usuarioFound.length !== 0) {
+                return usuarioFound;
             } else {
-                return { statusCode: 400, message: "No existe un usuario con correo " + correo }
+                return "No existe un usuario con correo " + correo;
             }
         } catch (error) {
-            console.log("Error en getUsuarioByCorreo: ", error)
-            return { statusCode: 500, message: { error: error } }
+            return error;
         }
     }
 
     async getUsuarios() {
         try {
-            const usuarioFinded = await Usuario.find({})
-            if (usuarioFinded.length !== 0) {
-                return { statusCode: 200, message: usuarioFinded }
+            const usuarioFound = await Usuario.find({})
+            if (usuarioFound.length !== 0) {
+                return usuarioFound;
             } else {
-                return { statusCode: 204, message: "No existen usuarios" }
+                return "No existen usuarios";
             }
         } catch (error) {
-            console.log("Error en getUsuario: ", error)
-            return { statusCode: 500, message: { error: error } }
+            return error;
         }
     }
 
     async deleteUsuario(id) {
         const usuarioFound = await Usuario.findById(id);
         if((await serviceProducto.findByUsuario(usuarioFound.nombre)).length !== 0){
-            return { statusCode: 400, message: "No es posible borrar el usuario porque tiene productos en activo" }
+            return "No es posible borrar el usuario porque tiene productos en activo";
         }else{
             const usuarioFound = await Usuario.findOneAndDelete(id);
 
             if (usuarioFound != null){
-                return {statusCode: 200, message: usuarioFound.toJSON()}
+                return usuarioFound.toJSON();
             }else{
-                return {statusCode: 400, message: "El usuario que quiere borrar no existe"}
+                return "El usuario que quiere borrar no existe";
             }
         }
         
@@ -113,9 +107,9 @@ class ServiceUsuario {
         const usuarioFound = await Usuario.findByIdAndUpdate(id, { nombre: nombreUsuario, correo: correo});
         const usuarioUpdate = await Usuario.findById(id);
         if (usuarioFound != null){
-            return {statusCode: 200, message: usuarioUpdate.toJSON()}
+            return usuarioUpdate.toJSON();
         }else{
-            return {statusCode: 400, message: "El usuario que quiere actualizar no existe"}
+            return "El usuario que quiere actualizar no existe";
         }
     }
 
@@ -125,11 +119,11 @@ class ServiceUsuario {
         const foundProducto = await serviceProducto.findById(producto);
 
         if (foundValorado == null) {
-            return {statusCode: 404, message: "El usuario que se quiere valorar no existe"}
+            return "El usuario que se quiere valorar no existe";
         } else if (foundValorador == null) {
-            return {statusCode: 404, message: "El usuario que valora no existe"}
+            return "El usuario que valora no existe";
         } else if (foundProducto == null){
-            return {statusCOde: 404, message: "El producto sobre el que se quiere valorar no existe"}
+            return "El producto sobre el que se quiere valorar no existe";
         }else{
 
             const nuevaValoracion = {
@@ -142,14 +136,14 @@ class ServiceUsuario {
             const usuarioEncontrado = foundValorado[0].valoracion.filter((valoracion) => valoracion.producto === foundProducto.id);
 
             if(usuarioEncontrado.length !== 0){
-                return {statusCode: 404, message: "A este usuario ya se le ha valorado por este producto"}
+                return "A este usuario ya se le ha valorado por este producto";
             }else{
                 const usuarioFound  = await Usuario.findByIdAndUpdate(foundValorado[0].id, {$push: {valoracion: nuevaValoracion}});
                 const usuarioValorado = await Usuario.findById(foundValorado[0].id);
                 if (usuarioValorado != null){
-                    return {statusCode: 200, message: usuarioValorado.toJSON()}
+                    return usuarioValorado.toJSON();
                 }else{
-                    return {statusCode: 400, message: "La valoración que quiere hacer no es posible"}
+                    return "La valoración que quiere hacer no es posible";
                 }
             }
            
