@@ -21,17 +21,17 @@ const createUsuarioController = async (req, res, next) => {
 const getUsuarioByIdController = async (req, res, next) => {
     
     try{
-        if(req.query.id){
-            response = await serviceUsuario.getUsuarioById(req.query.id)
-        }else if(req.query.nombre){
-            response = await serviceUsuario.getUsuarioByNombre(req.query.nombre)
-        }else if(req.query.correo){
-            response = await serviceUsuario.getUsuarioByCorreo(req.query.correo)
+        if(req.params.id){
+            usuario = await serviceUsuario.getUsuarioById(req.params.id)
+        }else if(req.params.nombre){
+            usuario = await serviceUsuario.getUsuarioByNombre(req.params.nombre)
+        }else if(req.params.correo){
+            usuario = await serviceUsuario.getUsuarioByCorreo(req.params.correo)
         }else{
-            response = await serviceUsuario.getUsuarios()
+            usuario = await serviceUsuario.getUsuarios()
         }
 
-        res.status(200).send({usuario: response});
+        res.status(200).send(usuario);
     
     }catch(error){
         res.status(500).send({success: false, message: error.message});
@@ -41,8 +41,7 @@ const getUsuarioByIdController = async (req, res, next) => {
 const deleteUsuarioController = async (req, res, next) => {
    try{
         const response = await serviceUsuario.deleteUsuario(req.params.id)
-
-        res.status(200).send({usuario: response});
+        res.status(200).send("Usuario borrado con éxito");
    }catch(error){
         res.status(500).send({success: false, message: error.message});
     }

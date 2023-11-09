@@ -19,7 +19,7 @@ class ServiceUsuario {
     
             for (const existingUsuario of existingUsuarios) {
                 if (existingUsuario['nombre'] === usuario['nombre']) {
-                    return "Ya existe una usuario con el mismo nombre";
+                    return "Ya existe un usuario con el mismo nombre";
                 }
             }
 
@@ -38,82 +38,33 @@ class ServiceUsuario {
     }
 
     async getUsuarioById(id) {
-        try {
-            const foundUsuario = await Usuario.findById(id)
-            if (foundUsuario) {
-                return foundUsuario;
-            } else {
-                return "No existe un usuario con id ";
-            }
-        } catch (error) {
-            return error;
-        }
+        const foundUsuario = await Usuario.findById(id)
+        return foundUsuario;
     }
 
     async getUsuarioByNombre(nombreUsuario) {
-        try {
-            const usuarioFound = await Usuario.find({ nombre: nombreUsuario })
-            if (usuarioFound.length !== 0) {
-                return usuarioFound;
-            } else {
-                return "No existe un usuario con nombre " + nombreUsuario;
-            }
-        } catch (error) {
-            return error;
-        }
+        const foundUsuario = await Usuario.find({ nombre: nombreUsuario })
+        return foundUsuario;
     }
 
     async getUsuarioByCorreo(correo) {
-        try {
-            const usuarioFound = await Usuario.find({ correo: correo })
-            if (usuarioFound.length !== 0) {
-                return usuarioFound;
-            } else {
-                return "No existe un usuario con correo " + correo;
-            }
-        } catch (error) {
-            return error;
-        }
+        const foundUsuario = await Usuario.find({ correo: correo })
+        return foundUsuario;
     }
 
     async getUsuarios() {
-        try {
-            const usuarioFound = await Usuario.find({})
-            if (usuarioFound.length !== 0) {
-                return usuarioFound;
-            } else {
-                return "No existen usuarios";
-            }
-        } catch (error) {
-            return error;
-        }
+        const foundUsuario = await Usuario.find()
+        return foundUsuario;
     }
 
     async deleteUsuario(id) {
-        const usuarioFound = await Usuario.findById(id);
-        if((await serviceProducto.findByUsuario(usuarioFound.nombre)).length !== 0){
-            return "No es posible borrar el usuario porque tiene productos en activo";
-        }else{
-            const usuarioFound = await Usuario.findOneAndDelete(id);
-
-            if (usuarioFound != null){
-                return usuarioFound.toJSON();
-            }else{
-                return "El usuario que quiere borrar no existe";
-            }
-        }
-        
-    
+        const res = await Usuario.findByIdAndDelete(id);
+        return res;
     }
 
     async updateUsuario(id, nombreUsuario, correo) {
-        const foundUsuario = await Usuario.findByIdAndUpdate(id, { nombre: nombreUsuario, correo: correo});
-        const usuarioUpdate = await Usuario.findById(id);
-        if (foundUsuario != null){
-            return usuarioUpdate.toJSON();
-        }else{
-            return "El usuario que quiere actualizar no existe";
-        }
+        const usuario = await Usuario.findByIdAndUpdate(id, { nombre: nombreUsuario, correo: correo});
+        return usuario;
     }
 
     async valorar(valoracion, usuarioValorado, usuarioValorador, producto){
