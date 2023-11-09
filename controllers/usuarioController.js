@@ -6,12 +6,12 @@ const createUsuarioController = async (req, res, next) => {
 
     if (!req.body){
         return res.status(400).json({
-            error: "user no exists"
+            error: "El usuario no existe"
         })
     }
     try{
         const usuario = await serviceUsuario.createUsuario(req.body)
-        res.status(200).send({message: "Usuario " + usuario.id + " creado con éxito", usuario: usuario});
+        res.status(201).send({message: "Usuario " + usuario.id + " creado con éxito", usuario: usuario});
     }catch (error) {
         res.status(500).send({success: false, message: error.message});
     }
@@ -62,7 +62,12 @@ const updateUsuarioController = async (req, res, next) => {
             }
         }else{
             response = await serviceUsuario.updateUsuario(req.body.id, req.body.nombre, req.body.correo)
-            res.status(200).send({usuario: response});
+            if(response === "El usuario que quiere actualizar no existe"){
+                res.status(400).send(response);
+            }else{
+                res.status(200).send({usuario: response});
+            }
+
         }
 
     }catch(error){

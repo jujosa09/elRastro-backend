@@ -11,11 +11,11 @@ class ServiceUsuario {
 
     async createUsuario(usuario) {
         try {
-            const usuarioFinded = await Usuario.find({});
-            const existedUsuarios = usuarioFinded.map(usuario => usuario.toJSON());
+            const foundUsuario = await Usuario.find({});
+            const existingUsuarios = foundUsuario.map(usuario => usuario.toJSON());
     
-            for (const existedUsuario of existedUsuarios) {
-                if (existedUsuario['nombre'] === usuario['nombre']) {
+            for (const existingUsuario of existingUsuarios) {
+                if (existingUsuario['nombre'] === usuario['nombre']) {
                     return "Ya existe una usuario con el mismo nombre";
                 }
             }
