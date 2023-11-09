@@ -9,8 +9,6 @@ routerUsuario.get('/', getUsuarioByIdController)
 routerUsuario.delete('/:id', deleteUsuarioController)
 routerUsuario.put('/', updateUsuarioController)
 
-
-
 module.exports = {
     routerUsuario
 }
