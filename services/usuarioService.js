@@ -3,6 +3,9 @@ const Usuario = require('../db/models/usuario');
 const ServiceProducto = require('../services/productoService');
 const serviceProducto = new ServiceProducto();
 
+const ServicePuja = require('../services/pujaService');
+const servicePuja = new ServicePuja();
+
 
 class ServiceUsuario {
     constructor() {}
@@ -114,8 +117,7 @@ class ServiceUsuario {
     }
 
     async valorar(valoracion, usuarioValorado, usuarioValorador, producto){
-        const foundValorado = await Usuario.findById(usuarioValorado)
-        const foundValorador = await Usuario.findById(usuarioValorador)
+        const foundValorador = await Usuario.findOne({nombre: usuarioValorador})
         const nuevaValoracion = {
             valorador: foundValorador.nombre,
             puntuacion: valoracion.puntuacion,
@@ -127,10 +129,11 @@ class ServiceUsuario {
         return foundUsuario.toJSON();
     }
 
-    async checkValoracion(valoracion, usuarioValorado, usuarioValorador, producto) {
-        const foundValorado = await Usuario.findById(usuarioValorado)
-        const foundValorador = await Usuario.findById(usuarioValorador)
+    async checkValoracion(usuarioValorado, usuarioValorador, producto) {
+        const foundValorado = await Usuario.findOne({nombre: usuarioValorado})
+        const foundValorador = await Usuario.findOne({nombre: usuarioValorador})
         const foundProducto = await serviceProducto.findById(producto);
+        const subastaClosed = await servicePuja.findByProduct(producto);
 
         if (foundValorado == null) {
             return "El usuario que se quiere valorar no existe";
@@ -138,17 +141,21 @@ class ServiceUsuario {
             return "El usuario que valora no existe";
         } else if (foundProducto == null){
             return "El producto sobre el que se quiere valorar no existe";
-        }else{
+        }else if(subastaClosed.fecha >= new Date()){
 
             const foundValoracion = foundValorado.valoracion.filter((val) => val.producto === producto && val.valorador === foundValorador.nombre);
 
             if(foundValoracion.length !== 0){
                 return "A este usuario ya se le ha valorado por este producto";
+            }else if(subastaClosed.nombre !== foundValorador){
+                return "El usuario no ha sido el ganador del producto";
             }
             return "ok"
+        }else{
+            return "La subasta aun no se ha cerrado";
         }
     }
-
+    
 }
 
 module.exports = ServiceUsuario;
