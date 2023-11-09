@@ -52,7 +52,7 @@ const deleteUsuarioController = async (req, res, next) => {
 const updateUsuarioController = async (req, res, next) => {
     try{
         if(typeof req.body.valoracion !== "undefined" && req.body.valoracion !== null){
-            const response = await serviceUsuario.checkValoracion(req.body.valoracion, req.body.valorado, req.body.valorador, req.body.producto)
+            const response = await serviceUsuario.checkValoracion(req.body.valorado, req.body.valorador, req.body.producto)
             if(response !== "ok"){
                 res.status(400).send(response);
             }else{
