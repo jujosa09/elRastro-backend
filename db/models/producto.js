@@ -1,5 +1,5 @@
 const {Schema, model} = require('mongoose')
-
+const mongoose = require('mongoose')
 const productoSchema = new Schema({
     nombre: String,
     direccion: Number,
@@ -12,6 +12,4 @@ const productoSchema = new Schema({
     puja: JSON
 })
 
-const Producto = model('Producto', productoSchema)
-
-module.exports = Producto
+module.exports = mongoose.models.Producto || mongoose.model('Producto', productoSchema)
