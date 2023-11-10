@@ -32,6 +32,15 @@ class ServiceProducto {
         return res;
     }
 
+    async findByPujasUsuario(pujas) {
+        let productosByPujas = [];
+        for (let i = 0; i < pujas.length; i++) {
+            const producto = await this.findById(pujas[i].producto);
+            productosByPujas.push({producto: producto, puja: pujas[i]});
+        }
+        return productosByPujas;
+    }
+
     async findByPrecio(precio) {
         const res = await Producto.find(
             {
@@ -134,7 +143,7 @@ class ServiceProducto {
         return {lat: coordenadas[0].toString(), long: coordenadas[1].toString()};
     }
 
-    async getDistanciaByCoordenadas(codPostalProducto, codPostalusuario) {
+    /*async getDistanciaByCoordenadas(codPostalProducto, codPostalusuario) {
         const coordenadasProducto = await this.getCoordenadasByCodPostal(codPostalProducto);
         const coordenadasUsuario = await this.getCoordenadasByCodPostal(codPostalusuario);
 
@@ -158,7 +167,7 @@ class ServiceProducto {
 
         const response = await axios.request(options);
         console.log(response.data);
-    }
+    }*/
 }
 
 module.exports = ServiceProducto;

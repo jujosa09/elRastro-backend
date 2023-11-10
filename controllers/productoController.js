@@ -30,6 +30,8 @@ const filtrarProductos = async(req, res) => {
 const listarProductosPorPujasUsuario = async(req, res) => {
     try {
         const pujas = await servicePuja.findByUser(req.params.user);
+        const productosByPujas = await serviceProducto.findByPujasUsuario(pujas);
+        res.status(200).send(productosByPujas);
     } catch (error) {
         res.status(500).send({success: false, message: error.message});
     }
@@ -89,4 +91,4 @@ const borrarProducto = async (req, res) => {
     }
 }
 
-module.exports = {listarProductos, guardarProducto, borrarProducto, filtrarProductos}
+module.exports = {listarProductos, listarProductosPorPujasUsuario, guardarProducto, borrarProducto, filtrarProductos}

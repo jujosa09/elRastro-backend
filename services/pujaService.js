@@ -38,7 +38,7 @@ class ServicePuja {
         );
         return res;
     }
-    
+
     async create(usuario, cantidad, producto) {
         const pujaCreada = await Puja.create(
             {
