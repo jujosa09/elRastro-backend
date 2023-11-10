@@ -5,6 +5,7 @@ const productoSchema = new Schema({
     direccion: Number,
     usuario: String,
     precioInicial: Number,
+    fechaInicio: Date,
     fechaCierre: Date,
     descripcion: String,
     imagen: String,

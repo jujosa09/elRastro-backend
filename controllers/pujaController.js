@@ -6,17 +6,20 @@ const serviceProducto = new ServiceProducto();
 
 const listarPujas = async (req, res) => {
     try {
-        const pujas = await servicePuja.findAll();
-        res.status(200).send(pujas);
-    } catch (error) {
-        res.status(500).send({success: false, message: error.message});
-    }
-}
+        if (typeof req.query.usuario === 'undefined' && typeof req.query.producto === 'undefined') {
+            const pujas = await servicePuja.findAll();
+            res.status(200).send({pujas: pujas});
+        } else if (typeof req.query.producto === 'undefined') {
+            const pujas = await servicePuja.findByUser(req.query.usuario);
+            res.status(200).send({pujas: pujas});
+        } else if (typeof req.query.usuario === 'undefined') {
+            const pujas = await servicePuja.findByProduct(req.query.producto);
+            res.status(200).send({pujas: pujas});
+        } else {
+            const pujas = await servicePuja.findByUserAndProduct(req.query.usuario, req.query.producto);
+            res.status(200).send({pujas: pujas});
+        }
 
-const listarPujasPorProducto = async (req, res) => {
-    try {
-        const pujas = await servicePuja.findByProduct(req.params.producto);
-        res.status(200).send(pujas);
     } catch (error) {
         res.status(500).send({success: false, message: error.message});
     }
@@ -25,14 +28,14 @@ const listarPujasPorProducto = async (req, res) => {
 const guardarPuja = async (req, res) => {
     try {
         if (typeof req.body.id !== "undefined" && req.body.id !== null && req.body.id !== '') {
-            const puja = await servicePuja.update(
+            const pujaActualizada = await servicePuja.update(
                 req.body.id,
                 req.body.usuario,
                 req.body.cantidad,
                 Date(),
                 req.body.producto
             )
-            res.status(200).send({message: 'Puja actualizada con éxito', puja: puja});
+            res.status(200).send({message: 'Puja actualizada con éxito', puja: pujaActualizada});
         } else {
             const check = await servicePuja.checkPuja(req.body.usuario, req.body.cantidad, req.body.producto);
 
@@ -42,7 +45,6 @@ const guardarPuja = async (req, res) => {
                 const pujaCreada = await servicePuja.create(
                     req.body.usuario,
                     req.body.cantidad,
-                    Date(),
                     req.body.producto
                 )
                 await serviceProducto.updatePuja(req.body.producto, pujaCreada);
@@ -56,11 +58,15 @@ const guardarPuja = async (req, res) => {
 
 const borrarPuja = async (req, res) => {
     try {
-        await servicePuja.delete(req.params.id);
-        res.status(200).send('Puja borrada con éxito');
+        const puja = await servicePuja.delete(req.params.id);
+        if (puja) {
+            res.status(200).send({message: 'Puja ' + req.params.id + ' borrada con éxito', puja: puja});
+        } else {
+            res.status(200).send({message: 'No existe la puja ' + req.params.id});
+        }
     } catch (error) {
         res.status(500).send({success: false, message: error.message});
     }
 }
 
-module.exports = {listarPujas, listarPujasPorProducto, guardarPuja, borrarPuja}
+module.exports = {listarPujas, guardarPuja, borrarPuja}

@@ -1,10 +1,11 @@
 const Producto = require('../db/models/producto');
+const axios = require('axios');
 
 class ServiceProducto {
     constructor() {}
 
     async findAll() {
-        const res = await Producto.find();
+        const res = await Producto.find().sort({fechaInicio: -1});
         return res;
     }
 
@@ -27,8 +28,17 @@ class ServiceProducto {
             {
                 usuario: usuario
             }
-        );
+        ).sort({fechaInicio: -1});
         return res;
+    }
+
+    async findByPujasUsuario(pujas) {
+        let productosByPujas = [];
+        for (let i = 0; i < pujas.length; i++) {
+            const producto = await this.findById(pujas[i].producto);
+            productosByPujas.push({producto: producto, puja: pujas[i]});
+        }
+        return productosByPujas;
     }
 
     async findByPrecio(precio) {
@@ -38,6 +48,28 @@ class ServiceProducto {
             }
         );
         return res;
+    }
+
+    async filterProductos(nombre, descripcion) {
+        if (typeof nombre === 'undefined' && typeof descripcion == 'undefined') {
+            const res = await this.findAll().sort({fechaInicio: -1});
+            return res;
+        } else {
+            const res = await Producto.find(
+                {
+                    nombre: {
+                        '$regex': nombre,
+                        '$options': 'i'
+                    },
+
+                    descripcion: {
+                        '$regex': descripcion,
+                        '$options': 'i'
+                    }
+                }
+            ).sort({fechaInicio: -1});
+            return res;
+        }
     }
 
     async checkProducto(nombre, usuario) {
@@ -58,9 +90,9 @@ class ServiceProducto {
                 direccion: direccion,
                 usuario: usuario,
                 precioInicial: precioInicial,
+                fechaInicio: Date(),
                 fechaCierre: fechaCierre,
                 descripcion: descripcion,
-                precioActual: null,
                 imagen: imagen,
                 puja: {}
             }
@@ -103,6 +135,39 @@ class ServiceProducto {
         const res = await Producto.findByIdAndDelete(id);
         return producto;
     }
+
+    async getCoordenadasByCodPostal(codPostal) {
+        const response = await fetch('https://api.mapbox.com/geocoding/v5/mapbox.places/'+codPostal+'.json?country=es&types=postcode&language=es&access_token=pk.eyJ1IjoibWlndWVsaXRvdGVwcm9ncmFtYSIsImEiOiJjbG9lb3lnZnIwbGl4MmtwbDEzNDN0YmZ1In0.XZ93RHOj4aUAzyjQTn7ykQ&limit=1');
+        const json = await response.json();
+        const coordenadas = json.features[0].geometry.coordinates;
+        return {lat: coordenadas[0].toString(), long: coordenadas[1].toString()};
+    }
+
+    /*async getDistanciaByCoordenadas(codPostalProducto, codPostalusuario) {
+        const coordenadasProducto = await this.getCoordenadasByCodPostal(codPostalProducto);
+        const coordenadasUsuario = await this.getCoordenadasByCodPostal(codPostalusuario);
+
+        const options = {
+            method: 'GET',
+            url: 'https://distance-calculator.p.rapidapi.com/distance/simple',
+            params: {
+                lat_1: coordenadasProducto.lat,
+                long_1: coordenadasProducto.long,
+                lat_2: coordenadasUsuario.lat,
+                long_2: coordenadasUsuario.long,
+                unit: 'kilometers',
+                decimal_places: '2'
+            },
+            headers: {
+                'Content-Type': 'application/json',
+                'X-RapidAPI-Key': process.env.RAPID_API_KEY,
+                'X-RapidAPI-Host': 'distance-calculator.p.rapidapi.com'
+            }
+        };
+
+        const response = await axios.request(options);
+        console.log(response.data);
+    }*/
 }
 
 module.exports = ServiceProducto;

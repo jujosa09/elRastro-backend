@@ -1,5 +1,5 @@
 const express = require('express')
-const {uploadImageController} = require('../controllers/imagesController')
+const {uploadImageController} = require('../controllers/imageController')
 const multer = require('multer')
 const storage = multer.memoryStorage()
 

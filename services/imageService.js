@@ -1,10 +1,10 @@
 const { cloudinary } = require('../storage');
-const Subasta = require('../db/models/subasta');
+const Producto = require('../db/models/Producto');
 
-const uploadImage = async (idSubasta, image) => {
+const uploadImage = async (productoId, image) => {
     try {
-        const subastaFound = await Subasta.findOne({ _id: idSubasta });
-        if (!subastaFound) {
+        const producto = await Producto.findById(productoId);
+        if (!producto) {
             return { statusCode: 400, message: "No existe la subasta" };
         }
 
@@ -16,8 +16,8 @@ const uploadImage = async (idSubasta, image) => {
                         console.error(error);
                         reject({ statusCode: 500, message: "Error al subir imagen a Cloudinary" });
                     } else {
-                        subastaFound.image = result.secure_url;
-                        subastaFound.save()
+                        producto.image = result.secure_url;
+                        producto.save()
                             .then((subasta) => {
                                 resolve({ statusCode: 200, message: subasta });
                             })
