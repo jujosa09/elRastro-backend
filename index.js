@@ -2,6 +2,7 @@ require('./db/mongoose')
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+
 const {routerImage} = require('./routes/routerImage')
 const {routerPuja} = require('./routes/routerPuja')
 const {routerChat} = require('./routes/routerChat')
