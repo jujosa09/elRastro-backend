@@ -94,6 +94,8 @@ class ServiceProducto {
 
         return i < productosUsuario.length?
             'Ya existe un producto con el mismo nombre para el usuario ' + usuario : 'ok';
+        
+       
     }
 
     async create(nombre, direccion, usuario, precioInicial, fechaCierre, descripcion, imagen) {
@@ -130,7 +132,8 @@ class ServiceProducto {
                 direccion: direccion,
                 descripcion: descripcion,
                 imagen: imagen
-            }
+            },
+            { new: true }
         );
         return res;
     }
@@ -139,7 +142,8 @@ class ServiceProducto {
         const res = await Producto.findByIdAndUpdate(id,
             {
                 puja: puja
-            }
+            },
+            { new: true }
         );
     }
 

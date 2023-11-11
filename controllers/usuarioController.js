@@ -21,12 +21,12 @@ const createUsuarioController = async (req, res, next) => {
 const getUsuarioByIdController = async (req, res, next) => {
     
     try{
-        if(req.params.id){
-            usuario = await serviceUsuario.getUsuarioById(req.params.id)
-        }else if(req.params.nombre){
-            usuario = await serviceUsuario.getUsuarioByNombre(req.params.nombre)
-        }else if(req.params.correo){
-            usuario = await serviceUsuario.getUsuarioByCorreo(req.params.correo)
+        if(req.query.id){
+            usuario = await serviceUsuario.getUsuarioById(req.query.id)
+        }else if(req.query.nombre){
+            usuario = await serviceUsuario.getUsuarioByNombre(req.query.nombre)
+        }else if(req.query.correo){
+            usuario = await serviceUsuario.getUsuarioByCorreo(req.query.correo)
         }else{
             usuario = await serviceUsuario.getUsuarios()
         }
@@ -61,8 +61,8 @@ const updateUsuarioController = async (req, res, next) => {
             }
         }else{
             response = await serviceUsuario.updateUsuario(req.body.id, req.body.nombre, req.body.correo)
-            if(response === "El usuario que quiere actualizar no existe"){
-                res.status(400).send(response);
+            if(response === null){
+                res.status(400).send("El usuario que quiere actualizar no existe");
             }else{
                 res.status(200).send({usuario: response});
             }

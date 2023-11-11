@@ -6,7 +6,13 @@ const serviceProducto = new ServiceProducto();
 const ServicePuja = require('../services/pujaService');
 const servicePuja = new ServicePuja();
 
+function formatarFecha(fecha) {
+    const dia = fecha.getDate().toString().padStart(2, '0');
+    const mes = (fecha.getMonth() + 1).toString().padStart(2, '0'); // Se suma 1 porque los meses comienzan desde 0
+    const año = fecha.getFullYear();
 
+    return `${dia}/${mes}/${año}`;
+}
 class ServiceUsuario {
     constructor() {}
 
@@ -61,7 +67,9 @@ class ServiceUsuario {
     }
 
     async updateUsuario(id, nombreUsuario, correo) {
-        const usuario = await Usuario.findByIdAndUpdate(id, { nombre: nombreUsuario, correo: correo});
+        const usuario = await Usuario.findByIdAndUpdate(id, { nombre: nombreUsuario, correo: correo},
+            { new: true });
+
         return usuario;
     }
 
@@ -74,23 +82,28 @@ class ServiceUsuario {
             producto: producto
         }
 
-        const foundUsuario  = await Usuario.findByIdAndUpdate(usuarioValorado, {$push: {valoracion: nuevaValoracion}});
+        const foundUsuario  = await Usuario.findByIdAndUpdate(usuarioValorado, {$push: {valoracion: nuevaValoracion}},
+            { new: true });
         return foundUsuario.toJSON();
     }
+
+    
 
     async checkValoracion(usuarioValorado, usuarioValorador, producto) {
         const foundValorado = await Usuario.findOne({nombre: usuarioValorado})
         const foundValorador = await Usuario.findOne({nombre: usuarioValorador})
         const foundProducto = await serviceProducto.findById(producto);
-        const subastaClosed = await servicePuja.findByProduct(producto);
+        const subastaClosed = foundProducto.puja;
+        const currentDate = new Date();
+        const formatedDate = formatarFecha(currentDate)
 
-        if (foundValorado == null) {
+        if (foundValorado.length === 0) {
             return "El usuario que se quiere valorar no existe";
-        } else if (foundValorador == null) {
+        } else if (foundValorador.length === 0) {
             return "El usuario que valora no existe";
-        } else if (foundProducto == null){
+        } else if (foundProducto.length === 0){
             return "El producto sobre el que se quiere valorar no existe";
-        }else if(subastaClosed.fecha >= new Date()){
+        }else if(subastaClosed.fecha >= formatedDate){
 
             const foundValoracion = foundValorado.valoracion.filter((val) => val.producto === producto && val.valorador === foundValorador.nombre);
 

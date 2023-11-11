@@ -40,7 +40,7 @@ const guardarPuja = async (req, res) => {
             const check = await servicePuja.checkPuja(req.body.usuario, req.body.cantidad, req.body.producto);
 
             if (check !== 'ok') {
-                res.status(200).send(check);
+                res.status(409).send(check);
             } else {
                 const pujaCreada = await servicePuja.create(
                     req.body.usuario,
@@ -62,7 +62,7 @@ const borrarPuja = async (req, res) => {
         if (puja) {
             res.status(200).send({message: 'Puja ' + req.params.id + ' borrada con éxito', puja: puja});
         } else {
-            res.status(200).send({message: 'No existe la puja ' + req.params.id});
+            res.status(400).send({message: 'No existe la puja ' + req.params.id});
         }
     } catch (error) {
         res.status(500).send({success: false, message: error.message});

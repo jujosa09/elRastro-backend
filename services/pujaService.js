@@ -95,7 +95,8 @@ class ServicePuja {
                 cantidad: cantidad,
                 fecha: fecha,
                 producto: producto
-            }
+            },
+            { new: true }
         );
         return res;
     }

@@ -12,4 +12,5 @@ const productoSchema = new Schema({
     puja: JSON
 })
 
+
 module.exports = mongoose.models.Producto || mongoose.model('Producto', productoSchema)

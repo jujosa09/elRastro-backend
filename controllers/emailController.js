@@ -6,15 +6,8 @@ const notifyPurchaseController = async(req, res, next) => {
             error: "bad request"
         })
     }
-    
-    const producto = req.body.producto
-    const comprador = req.body.comprador
-    const vendedor = req.body.vendedor
-
-    const response = await notifyPurchase(producto, comprador, vendedor)
-
+    const response = await notifyPurchase(req.body.producto, req.body.comprador, req.body.vendedor)
     res.status(response["statusCode"]).json(response["message"])
-
 }
 
 module.exports = {

@@ -4,6 +4,9 @@ const serviceProducto = new ServiceProducto();
 const ServicePuja = require('../services/pujaService');
 const servicePuja = new ServicePuja();
 
+const ServiceUsuario = require('../services/usuarioService')
+const serviceUsuario = new ServiceUsuario()
+
 const listarProductos = async(req, res) => {
     try {
         if (typeof req.query.usuario !== 'undefined' && req.query.usuario !== null && req.query.usuario !== '') {
@@ -42,7 +45,7 @@ const guardarProducto = async(req, res) => {
         if (typeof req.body.id !== "undefined" && req.body.id !== null && req.body.id !== '') {
             const check = await  serviceProducto.checkProductoActualizable(req.body.id);
             if (check !== 'ok') {
-                res.status(200).send({message: check});
+                res.status(409).send({message: check});
             } else {
                 const producto = await serviceProducto.update(
                        req.body.id,
@@ -54,21 +57,27 @@ const guardarProducto = async(req, res) => {
                 res.status(200).send({message: 'Producto ' + req.body.id + ' actualizado con éxito', producto: producto});
             }
         } else {
-            const check = await serviceProducto.checkProducto(req.body.nombre, req.body.usuario);
 
-            if (check !== 'ok') {
-                res.status(200).send({message: check});
-            } else {
-                const producto = await serviceProducto.create(
-                    req.body.nombre,
-                    req.body.direccion,
-                    req.body.usuario,
-                    req.body.precioInicial,
-                    req.body.fechaCierre,
-                    req.body.descripcion,
-                    req.body.imagen
-                )
-                res.status(201).send({message: 'Producto creado con éxito', producto: producto});
+            const usuario = serviceUsuario.getUsuarioById(req.body.usuario)
+
+            if(usuario === null){
+                res.status(400).send("El usuario no existe")
+            }else{
+                const check = await serviceProducto.checkProducto(req.body.nombre, req.body.usuario);
+                if (check !== 'ok') {
+                    res.status(409).send({message: check});
+                } else {
+                    const producto = await serviceProducto.create(
+                        req.body.nombre,
+                        req.body.direccion,
+                        req.body.usuario,
+                        req.body.precioInicial,
+                        req.body.fechaCierre,
+                        req.body.descripcion,
+                        req.body.imagen
+                    )
+                    res.status(201).send({message: 'Producto creado con éxito', producto: producto});
+                }
             }
         }
     } catch (error) {
@@ -83,7 +92,7 @@ const borrarProducto = async (req, res) => {
             await servicePuja.deletePujasByProduct(req.params.id);
             res.status(200).send({message: 'Producto ' + req.params.id + ' borrado con éxito', producto: producto});
         } else {
-            res.status(200).send({message: 'No existe el producto ' + req.params.id});
+            res.status(400).send({message: 'No existe el producto ' + req.params.id});
         }
 
     } catch (error) {
