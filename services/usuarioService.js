@@ -10,8 +10,6 @@ const servicePuja = new ServicePuja();
 class ServiceUsuario {
     constructor() {}
 
-    
-
     async createUsuario(usuario) {
         try {
             const foundUsuario = await Usuario.find({});

@@ -6,8 +6,8 @@ const servicePuja = new ServicePuja();
 
 const listarProductos = async(req, res) => {
     try {
-        if (typeof req.params.usuario !== 'undefined' && req.params.usuario !== null && req.params.usuario !== '') {
-            const productos = await serviceProducto.findByUsuario(req.params.usuario);
+        if (typeof req.query.usuario !== 'undefined' && req.query.usuario !== null && req.query.usuario !== '') {
+            const productos = await serviceProducto.findByUsuario(req.query.usuario);
             res.status(200).send({productos: productos});
         } else {
             const productos = await serviceProducto.findAll();
@@ -29,9 +29,9 @@ const filtrarProductos = async(req, res) => {
 
 const listarProductosPorPujasUsuario = async(req, res) => {
     try {
-        const pujas = await servicePuja.findByUser(req.params.user);
+        const pujas = await servicePuja.findByUser(req.query.usuario);
         const productosByPujas = await serviceProducto.findByPujasUsuario(pujas);
-        res.status(200).send(productosByPujas);
+        res.status(200).send({productos: productosByPujas});
     } catch (error) {
         res.status(500).send({success: false, message: error.message});
     }

@@ -1,5 +1,5 @@
-const {Producto} = require('../db/models/producto');
-const axios = require('axios');
+const Producto = require('../db/models/producto');
+//const axios = require('axios');
 
 class ServiceProducto {
     constructor() {}
@@ -35,10 +35,23 @@ class ServiceProducto {
     async findByPujasUsuario(pujas) {
         let productosByPujas = [];
         for (let i = 0; i < pujas.length; i++) {
-            const producto = await this.findById(pujas[i].producto);
-            productosByPujas.push({producto: producto, puja: pujas[i]});
+            await this.processProductosByPujas(pujas[i].producto, pujas[i], productosByPujas);
         }
         return productosByPujas;
+    }
+
+    async processProductosByPujas(productoId, puja, productosByPujas) {
+        let j = 0;
+        while (j < productosByPujas.length && productosByPujas[j].producto.id !== productoId) {
+            j++;
+        }
+
+        if (j >= productosByPujas.length) {
+            const producto = await this.findById(productoId);
+            productosByPujas.push({producto: producto, pujas: [puja]});
+        } else {
+            productosByPujas[j].pujas.push(puja);
+        }
     }
 
     async findByPrecio(precio) {
