@@ -160,31 +160,6 @@ class ServiceProducto {
         return {lat: coordenadas[0].toString(), long: coordenadas[1].toString()};
     }
 
-    /*async getDistanciaByCoordenadas(codPostalProducto, codPostalusuario) {
-        const coordenadasProducto = await this.getCoordenadasByCodPostal(codPostalProducto);
-        const coordenadasUsuario = await this.getCoordenadasByCodPostal(codPostalusuario);
-
-        const options = {
-            method: 'GET',
-            url: 'https://distance-calculator.p.rapidapi.com/distance/simple',
-            params: {
-                lat_1: coordenadasProducto.lat,
-                long_1: coordenadasProducto.long,
-                lat_2: coordenadasUsuario.lat,
-                long_2: coordenadasUsuario.long,
-                unit: 'kilometers',
-                decimal_places: '2'
-            },
-            headers: {
-                'Content-Type': 'application/json',
-                'X-RapidAPI-Key': process.env.RAPID_API_KEY,
-                'X-RapidAPI-Host': 'distance-calculator.p.rapidapi.com'
-            }
-        };
-
-        const response = await axios.request(options);
-        console.log(response.data);
-    }*/
 }
 
 module.exports = ServiceProducto;
