@@ -18,7 +18,7 @@ class ServicePuja {
     async findByProduct(idProducto) {
         const res = await Puja.find({
             producto: idProducto
-        })
+        }).sort({cantidad: 1});
         return res;
     }
 

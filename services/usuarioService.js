@@ -3,9 +3,6 @@ const Usuario = require('../db/models/usuario');
 const ServiceProducto = require('../services/productoService');
 const serviceProducto = new ServiceProducto();
 
-const ServicePuja = require('../services/pujaService');
-const servicePuja = new ServicePuja();
-
 function formatarFecha(fecha) {
     const dia = fecha.getDate().toString().padStart(2, '0');
     const mes = (fecha.getMonth() + 1).toString().padStart(2, '0'); // Se suma 1 porque los meses comienzan desde 0
@@ -23,7 +20,7 @@ class ServiceUsuario {
     
             for (const existingUsuario of existingUsuarios) {
                 if (existingUsuario['nombre'] === usuario['nombre']) {
-                    return "Ya existe un usuario con el mismo nombre";
+                    return {message: "Ya existe un usuario con el mismo nombre"};
                 }
             }
 
@@ -35,7 +32,7 @@ class ServiceUsuario {
             )
 
 
-            return res;
+            return {message: 'ok', usuario: res};
         } catch (error) {
             return error;
         }
@@ -62,8 +59,13 @@ class ServiceUsuario {
     }
 
     async deleteUsuario(id) {
-        const res = await Usuario.findByIdAndDelete(id);
-        return res;
+        const producto = await serviceProducto.findByUsuario(id)
+        if(producto.length !== 0){
+            return {status: 409, res: "El usuario " + id + " tiene productos y no se puede borrar"};
+        }else{
+            const res = await Usuario.findByIdAndDelete(id);
+            return {status: 200, res: res};
+        }
     }
 
     async updateUsuario(id, nombreUsuario, correo) {
@@ -90,26 +92,26 @@ class ServiceUsuario {
     
 
     async checkValoracion(usuarioValorado, usuarioValorador, producto) {
-        const foundValorado = await Usuario.findOne({nombre: usuarioValorado})
+        const foundValorado = await Usuario.findById(usuarioValorado)
         const foundValorador = await Usuario.findOne({nombre: usuarioValorador})
         const foundProducto = await serviceProducto.findById(producto);
         const subastaClosed = foundProducto.puja;
         const currentDate = new Date();
-        const formatedDate = formatarFecha(currentDate)
+        //const formatedDate = formatarFecha(currentDate)
 
-        if (foundValorado.length === 0) {
+        if (typeof foundValorado === 'undefined' || !foundValorado) {
             return "El usuario que se quiere valorar no existe";
-        } else if (foundValorador.length === 0) {
+        } else if (typeof foundValorador === 'undefined' || !foundValorador) {
             return "El usuario que valora no existe";
-        } else if (foundProducto.length === 0){
+        } else if (typeof foundProducto === 'undefined' || !foundProducto){
             return "El producto sobre el que se quiere valorar no existe";
-        }else if(subastaClosed.fecha >= formatedDate){
+        }else if(foundProducto.fechaCierre < currentDate){
 
             const foundValoracion = foundValorado.valoracion.filter((val) => val.producto === producto && val.valorador === foundValorador.nombre);
 
             if(foundValoracion.length !== 0){
                 return "A este usuario ya se le ha valorado por este producto";
-            }else if(subastaClosed.nombre !== foundValorador){
+            }else if(subastaClosed.usuario !== foundValorador.id){
                 return "El usuario no ha sido el ganador del producto";
             }
             return "ok"

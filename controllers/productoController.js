@@ -51,13 +51,11 @@ const guardarProducto = async(req, res) => {
                        req.body.id,
                        req.body.nombre,
                        req.body.direccion,
-                       req.body.descripcion,
-                       req.body.imagen
+                       req.body.descripcion
                    );
                 res.status(200).send({message: 'Producto ' + req.body.id + ' actualizado con éxito', producto: producto});
             }
         } else {
-
             const usuario = serviceUsuario.getUsuarioById(req.body.usuario)
 
             if(usuario === null){

@@ -35,10 +35,10 @@ const guardarPuja = async (req, res) => {
                 Date(),
                 req.body.producto
             )
+
             res.status(200).send({message: 'Puja actualizada con éxito', puja: pujaActualizada});
         } else {
             const check = await servicePuja.checkPuja(req.body.usuario, req.body.cantidad, req.body.producto);
-
             if (check !== 'ok') {
                 res.status(409).send(check);
             } else {
@@ -48,6 +48,7 @@ const guardarPuja = async (req, res) => {
                     req.body.producto
                 )
                 await serviceProducto.updatePuja(req.body.producto, pujaCreada);
+
                 res.status(201).send({message: 'Puja creada con éxito', puja: pujaCreada});
             }
         }
@@ -60,6 +61,17 @@ const borrarPuja = async (req, res) => {
     try {
         const puja = await servicePuja.delete(req.params.id);
         if (puja) {
+            const pujasProducto = await servicePuja.findByProduct(puja.producto);
+            let nuevaPujaMasAlta;
+
+            if (pujasProducto.length === 0) {
+                nuevaPujaMasAlta = {};
+                await serviceProducto.updatePuja(puja.producto, nuevaPujaMasAlta);
+            }else if (pujasProducto[pujasProducto.length - 1].cantidad < puja.cantidad) {
+                nuevaPujaMasAlta = pujasProducto[pujasProducto.length - 1];
+                await serviceProducto.updatePuja(puja.producto, nuevaPujaMasAlta);
+            }
+
             res.status(200).send({message: 'Puja ' + req.params.id + ' borrada con éxito', puja: puja});
         } else {
             res.status(400).send({message: 'No existe la puja ' + req.params.id});

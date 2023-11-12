@@ -125,13 +125,12 @@ class ServiceProducto {
         }
     }
 
-    async update(id, nombre, direccion, descripcion, imagen) {
+    async update(id, nombre, direccion, descripcion) {
         const res = await Producto.findByIdAndUpdate(id,
             {
                 nombre: nombre,
                 direccion: direccion,
-                descripcion: descripcion,
-                imagen: imagen
+                descripcion: descripcion
             },
             { new: true }
         );
@@ -151,13 +150,6 @@ class ServiceProducto {
         const producto = await this.findById(id);
         const res = await Producto.findByIdAndDelete(id);
         return producto;
-    }
-
-    async getCoordenadasByCodPostal(codPostal) {
-        const response = await fetch('https://api.mapbox.com/geocoding/v5/mapbox.places/'+codPostal+'.json?country=es&types=postcode&language=es&access_token=pk.eyJ1IjoibWlndWVsaXRvdGVwcm9ncmFtYSIsImEiOiJjbG9lb3lnZnIwbGl4MmtwbDEzNDN0YmZ1In0.XZ93RHOj4aUAzyjQTn7ykQ&limit=1');
-        const json = await response.json();
-        const coordenadas = json.features[0].geometry.coordinates;
-        return {lat: coordenadas[0].toString(), long: coordenadas[1].toString()};
     }
 
 }
