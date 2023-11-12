@@ -32,11 +32,8 @@ class ServiceCarbono {
     }
 
     async getHuellaCarbono(codPostalUsuario, codPostalProducto) {
-        //const coordenadasUsuario = await this.getCoordenadasByCodPostal(codPostalUsuario);
-        //const coordenadasProducto = await this.getCoordenadasByCodPostal(codPostalProducto);
-
-        const coordenadasUsuario = {lat: '36.737936', long: '-4.432891'};
-        const coordenadasProducto = {lat: '36.691185', long: '-4.473922'};
+        const coordenadasUsuario = await this.getCoordenadasByCodPostal(codPostalUsuario);
+        const coordenadasProducto = await this.getCoordenadasByCodPostal(codPostalProducto);
 
         const distancia = await this.getDistanciaFromCoordinates(coordenadasProducto, coordenadasUsuario);
 
