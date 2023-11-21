@@ -54,33 +54,46 @@ const deleteUsuarioController = async (req, res, next) => {
 
 const updateUsuarioController = async (req, res, next) => {
     try{
-        if(typeof req.body.valoracion !== "undefined" && req.body.valoracion !== null){
-            const response = await serviceUsuario.checkValoracion(req.body.valorado, req.body.valorador, req.body.producto)
-            if(response !== "ok"){
-                res.status(400).send(response);
-            }else{
-                const usuario = await serviceUsuario.valorar(req.body.valoracion, req.body.valorado, req.body.valorador, req.body.producto)
-                res.status(200).send({usuario: usuario});
-            }
+        const response = await serviceUsuario.updateUsuario(req.body.id, req.body.nombre, req.body.correo)
+        if(response === null){
+            res.status(400).send("El usuario que quiere actualizar no existe");
         }else{
-            response = await serviceUsuario.updateUsuario(req.body.id, req.body.nombre, req.body.correo)
-            if(response === null){
-                res.status(400).send("El usuario que quiere actualizar no existe");
-            }else{
-                res.status(200).send({usuario: response});
-            }
-
+            res.status(200).send({usuario: response});
         }
-
     }catch(error){
         res.status(500).send({success: false, message: error.message});
     }
     
 }
 
+
+const updateValoracionController = async (req, res, next) => {
+    try{
+        const response = await serviceUsuario.checkValoracion(req.body.valorado, req.body.valorador, req.body.producto)
+        if(response !== "ok"){
+            res.status(400).send(response);
+        }else{
+            const usuario = await serviceUsuario.valorar(req.body.valoracion, req.body.valorado, req.body.valorador, req.body.producto)
+            res.status(200).send({usuario: usuario});
+        }
+    }catch(error){
+        res.status(500).send({success: false, message: error.message});
+    }
+}
+
+const getRatingUsuarioController = async (req, res, next) => {
+    try{
+        const media = await serviceUsuario.getValoracionMedia(req.query.idUsuario)
+        res.status(200).send({usuario: media});
+    }catch(error){
+        res.status(500).send({success: false, message: error.message});
+    }
+}
 module.exports = {
     createUsuarioController,
     getUsuarioByIdController,
     deleteUsuarioController,
-    updateUsuarioController
+    updateUsuarioController,
+    updateValoracionController,
+    getRatingUsuarioController
 }

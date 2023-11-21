@@ -89,6 +89,20 @@ class ServiceUsuario {
         return foundUsuario.toJSON();
     }
 
+    async getValoracionMedia(idUsuario){
+        const foundUsuario = await Usuario.findById(idUsuario);
+
+        const sumaPuntuaciones = foundUsuairo.valoracion.reduce((total, val) => {
+            return total + val.puntuacion;
+          }, 0);
+
+        const cantidadValoraciones = foundUsuario.valoracion.length;
+        const mediaPuntuaciones = cantidadValoraciones > 0 ? sumaPuntuaciones / cantidadValoraciones : 0;
+
+        return mediaPuntuaciones.toJSON();
+
+    }
+
     
 
     async checkValoracion(usuarioValorado, usuarioValorador, producto) {
