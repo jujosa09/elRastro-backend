@@ -56,7 +56,7 @@ const guardarProducto = async(req, res) => {
                 res.status(200).send({message: 'Producto ' + req.body.id + ' actualizado con éxito', producto: producto});
             }
         } else {
-            const usuario = serviceUsuario.getUsuarioById(req.body.usuario)
+            const usuario = serviceUsuario.getUsuarioByCorreo(req.body.usuario)
 
             if(usuario === null){
                 res.status(400).send("El usuario no existe")

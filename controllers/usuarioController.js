@@ -14,7 +14,7 @@ const createUsuarioController = async (req, res, next) => {
         if (usuario.message !== 'ok') {
             res.status(409).send({message: usuario.message});
         } else {
-            res.status(201).send({message: "Usuario " + usuario.usuario.id + " creado con éxito", usuario: usuario.usuario});
+            res.status(201).send({message: "Usuario " + usuario.usuario.correo + " creado con éxito", usuario: usuario.usuario});
         }
     }catch (error) {
         res.status(500).send({success: false, message: error.message});
@@ -25,9 +25,7 @@ const createUsuarioController = async (req, res, next) => {
 const getUsuarioByIdController = async (req, res, next) => {
     
     try{
-        if(req.query.id){
-            usuario = await serviceUsuario.getUsuarioById(req.query.id)
-        }else if(req.query.nombre){
+        if(req.query.nombre){
             usuario = await serviceUsuario.getUsuarioByNombre(req.query.nombre)
         }else if(req.query.correo){
             usuario = await serviceUsuario.getUsuarioByCorreo(req.query.correo)
@@ -44,7 +42,7 @@ const getUsuarioByIdController = async (req, res, next) => {
 
 const deleteUsuarioController = async (req, res, next) => {
    try{
-        const response = await serviceUsuario.deleteUsuario(req.params.id)
+        const response = await serviceUsuario.deleteUsuario(req.params.correo)
         res.status(response.status).send(response.res);
    }catch(error){
         res.status(500).send({success: false, message: error.message});
@@ -63,7 +61,7 @@ const updateUsuarioController = async (req, res, next) => {
                 res.status(200).send({usuario: usuario});
             }
         }else{
-            response = await serviceUsuario.updateUsuario(req.body.id, req.body.nombre, req.body.correo)
+            response = await serviceUsuario.updateUsuario(req.body.correo, req.body.nombre)
             if(response === null){
                 res.status(400).send("El usuario que quiere actualizar no existe");
             }else{

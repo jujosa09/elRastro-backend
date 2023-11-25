@@ -19,8 +19,8 @@ class ServiceUsuario {
             const existingUsuarios = foundUsuario.map(usuario => usuario.toJSON());
     
             for (const existingUsuario of existingUsuarios) {
-                if (existingUsuario['nombre'] === usuario['nombre']) {
-                    return {message: "Ya existe un usuario con el mismo nombre"};
+                if (existingUsuario['correo'] === usuario['correo']) {
+                    return {message: "Ya existe un usuario con el mismo correo"};
                 }
             }
 
@@ -38,11 +38,6 @@ class ServiceUsuario {
         }
     }
 
-    async getUsuarioById(id) {
-        const foundUsuario = await Usuario.findById(id)
-        return foundUsuario;
-    }
-
     async getUsuarioByNombre(nombreUsuario) {
         const foundUsuario = await Usuario.find({ nombre: nombreUsuario })
         return foundUsuario;
@@ -58,25 +53,25 @@ class ServiceUsuario {
         return foundUsuario;
     }
 
-    async deleteUsuario(id) {
-        const producto = await serviceProducto.findByUsuario(id)
+    async deleteUsuario(correo) {
+        const producto = await serviceProducto.findByUsuario(correo)
         if(producto.length !== 0){
-            return {status: 409, res: "El usuario " + id + " tiene productos y no se puede borrar"};
+            return {status: 409, res: "El usuario " + correo + " tiene productos y no se puede borrar"};
         }else{
-            const res = await Usuario.findByIdAndDelete(id);
+            const res = await Usuario.deleteOne({correo: correo});
             return {status: 200, res: res};
         }
     }
 
-    async updateUsuario(id, nombreUsuario, correo) {
-        const usuario = await Usuario.findByIdAndUpdate(id, { nombre: nombreUsuario, correo: correo},
+    async updateUsuario(correo, nombreUsuario) {
+        const usuario = await Usuario.findOneAndUpdate({correo: correo}, { nombre: nombreUsuario },
             { new: true });
 
         return usuario;
     }
 
     async valorar(valoracion, usuarioValorado, usuarioValorador, producto){
-        const foundValorador = await Usuario.findOne({nombre: usuarioValorador})
+        const foundValorador = await Usuario.findOne({correo: usuarioValorador})
         const nuevaValoracion = {
             valorador: foundValorador.nombre,
             puntuacion: valoracion.puntuacion,
@@ -84,7 +79,7 @@ class ServiceUsuario {
             producto: producto
         }
 
-        const foundUsuario  = await Usuario.findByIdAndUpdate(usuarioValorado, {$push: {valoracion: nuevaValoracion}},
+        const foundUsuario  = await Usuario.findOneAndUpdate({correo: usuarioValorado}, {$push: {valoracion: nuevaValoracion}},
             { new: true });
         return foundUsuario.toJSON();
     }
@@ -92,8 +87,8 @@ class ServiceUsuario {
     
 
     async checkValoracion(usuarioValorado, usuarioValorador, producto) {
-        const foundValorado = await Usuario.findById(usuarioValorado)
-        const foundValorador = await Usuario.findOne({nombre: usuarioValorador})
+        const foundValorado = await Usuario.findOne({correo: usuarioValorado})
+        const foundValorador = await Usuario.findOne({correo: usuarioValorador})
         const foundProducto = await serviceProducto.findById(producto);
         const subastaClosed = foundProducto.puja;
         const currentDate = new Date();
@@ -111,7 +106,7 @@ class ServiceUsuario {
 
             if(foundValoracion.length !== 0){
                 return "A este usuario ya se le ha valorado por este producto";
-            }else if(subastaClosed.usuario !== foundValorador.id){
+            }else if(subastaClosed.usuario !== foundValorador.correo){
                 return "El usuario no ha sido el ganador del producto";
             }
             return "ok"
