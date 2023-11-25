@@ -5,7 +5,7 @@ const {Schema, model} = require('mongoose')
 const chatSchema = new Schema({
     vendedor: String,
     comprador: String,
-    producto: Number,
+    producto: String,
     mensajes: JSON
 })
 
