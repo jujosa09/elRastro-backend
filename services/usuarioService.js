@@ -73,7 +73,7 @@ class ServiceUsuario {
     async valorar(valoracion, usuarioValorado, usuarioValorador, producto){
         const foundValorador = await Usuario.findOne({correo: usuarioValorador})
         const nuevaValoracion = {
-            valorador: foundValorador.nombre,
+            valorador: foundValorador.correo,
             puntuacion: valoracion.puntuacion,
             descripcion: valoracion.descripcion,
             producto: producto
@@ -84,6 +84,28 @@ class ServiceUsuario {
         return foundUsuario.toJSON();
     }
 
+    async getValoracionMedia(correo){
+        const foundUsuario = await Usuario.findOne({correo: correo});
+
+        const sumaPuntuaciones = foundUsuario.valoracion.reduce((total, val) => {
+            return total + val.puntuacion;
+          }, 0);
+
+        const cantidadValoraciones = foundUsuario.valoracion.length;
+        const mediaPuntuaciones = cantidadValoraciones > 0 ? sumaPuntuaciones / cantidadValoraciones : 0;
+
+        return mediaPuntuaciones;
+
+    }
+
+    async getValoracion(correo){
+        const foundUsuario = await Usuario.findOne({correo: correo});
+        console.log(foundUsuario)
+        const valoraciones = foundUsuario.valoracion;
+
+        return valoraciones;
+
+    }
     
 
     async checkValoracion(usuarioValorado, usuarioValorador, producto) {
@@ -102,8 +124,8 @@ class ServiceUsuario {
             return "El producto sobre el que se quiere valorar no existe";
         }else if(foundProducto.fechaCierre < currentDate){
 
-            const foundValoracion = foundValorado.valoracion.filter((val) => val.producto === producto && val.valorador === foundValorador.nombre);
-
+            const foundValoracion = foundValorado.valoracion.filter((val) => val.producto === producto && val.valorador === foundValorador.correo);
+            console.log(subastaClosed.usuario)
             if(foundValoracion.length !== 0){
                 return "A este usuario ya se le ha valorado por este producto";
             }else if(subastaClosed.usuario !== foundValorador.correo){

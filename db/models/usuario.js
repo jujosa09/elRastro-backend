@@ -2,7 +2,7 @@ const {Schema, model} = require('mongoose')
 
 const usuarioSchema = new Schema({
     nombre: String,
-    correo: String,
+    correo: {type:String, unique: true},
     valoracion: [JSON]
 })
 
