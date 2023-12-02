@@ -38,6 +38,49 @@ class ServiceUsuario {
         }
     }
 
+    async getDataFromGoogleToken(token) {
+        const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo?access_token=' + token);
+        const json = await response.json();
+
+        return json;
+    }
+
+    async createUsuarioFromGoogle(token) {
+        try {
+            const json = await this.getDataFromGoogleToken(token);
+            const res = await Usuario.create(
+                {
+                    nombre: json.name,
+                    correo: json.email,
+                }
+            )
+
+            return {status: 200,res: 'Usuario creado con los datos de Google con éxito'};
+        } catch (error) {
+            return {status: 401, res: error};
+        }
+    }
+
+
+
+    async verifyGoogleToken(googleToken) {
+        try {
+            const response = await fetch('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + googleToken);
+            const json = await response.json();
+            if(json.error){
+                return {status: 401, res: "El token de sesión no es válido"}
+            }else{
+                return {status: 200, res: "valido"};
+            }
+
+        }
+        catch (error) {
+            console.error('Error al verificar el token de Google:', error);
+            return {status: 401, res: "token no valido"};
+        }
+    }
+
+
     async getUsuarioByNombre(nombreUsuario) {
         const foundUsuario = await Usuario.find({ nombre: nombreUsuario })
         return foundUsuario;

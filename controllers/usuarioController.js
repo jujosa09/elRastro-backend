@@ -20,7 +20,47 @@ const createUsuarioController = async (req, res, next) => {
         res.status(500).send({success: false, message: error.message});
     }
 
-} 
+}
+
+const getUsuarioFromTokenController = async (req, res, next) => {
+    try{
+        const isValid = await serviceUsuario.verifyGoogleToken(req.query.token)
+        if(isValid.status === 200){
+            userData = await serviceUsuario.getDataFromGoogleToken(req.query.token)
+            console.log(userData)
+            const usuario = await serviceUsuario.getUsuarioByCorreo(userData.email)
+            res.status(200).send(usuario);
+        }else{
+            res.status(isValid.status).send(isValid.res);
+        }
+
+
+    }catch(error){
+        res.status(500).send({success: false, message: error.message});
+    }
+}
+
+const createUsuarioFromGoogleController = async (req, res, next) => {
+    try{
+        const isValid = await serviceUsuario.verifyGoogleToken(req.query.token)
+        if(isValid.status === 200){
+            const googleUser = await serviceUsuario.getDataFromGoogleToken(req.query.token);
+            const localUsuario = await serviceUsuario.getUsuarioByCorreo(googleUser.email);
+            if (localUsuario.length === 0) {
+                console.log("El usuario no existe creo uno nuevo")
+                const newUsuario = await serviceUsuario.createUsuarioFromGoogle(req.query.token);
+                res.status(200).send({message: "Usuario creado con éxito"});
+            } else {
+                res.status(200).send({message: "Usuario ya existe"});
+            }
+        }else{
+            res.status(isValid.status).send(isValid.res);
+        }
+
+    }catch (error) {
+        res.status(500).send({success: false, message: error.message});
+    }
+}
 
 const getUsuarioByIdController = async (req, res, next) => {
     
@@ -103,5 +143,7 @@ module.exports = {
     updateUsuarioController,
     updateValoracionController,
     getRatingUsuarioController,
-    getValoracionUsuarioController
+    getValoracionUsuarioController,
+    createUsuarioFromGoogleController,
+    getUsuarioFromTokenController
 }

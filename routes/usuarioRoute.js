@@ -1,7 +1,9 @@
 const express = require('express')
 
 const { createUsuarioController, getUsuarioByIdController, deleteUsuarioController, updateUsuarioController,
-        updateValoracionController, getRatingUsuarioController, getValoracionUsuarioController } = require('../controllers/usuarioController')
+        updateValoracionController, getRatingUsuarioController, getValoracionUsuarioController,
+    createUsuarioFromGoogleController,getUsuarioFromTokenController
+} = require('../controllers/usuarioController')
 
 const routerUsuario = express.Router()
 
@@ -12,6 +14,8 @@ routerUsuario.put('/', updateUsuarioController)
 routerUsuario.put('/valoracion', updateValoracionController)
 routerUsuario.get('/valoracionMedia', getRatingUsuarioController)
 routerUsuario.get('/valoracion', getValoracionUsuarioController)
+routerUsuario.get('/fromToken', getUsuarioFromTokenController)
+routerUsuario.get('/checkOrCreate', createUsuarioFromGoogleController)
 
 module.exports = {
     routerUsuario

@@ -18,6 +18,9 @@ app.get('/', (req, res, next) => {
     res.send('App working!')
     next()
 })
+const cors = require('cors')
+
+app.use(cors())
 
 app.use('/upload', routerImage)
 app.use('/puja', routerPuja)
