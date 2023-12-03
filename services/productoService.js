@@ -1,4 +1,5 @@
 const Producto = require('../db/models/producto');
+const {uploadImage} = require('./imageService')
 //const axios = require('axios');
 
 class ServiceProducto {
@@ -99,6 +100,7 @@ class ServiceProducto {
     }
 
     async create(nombre, direccion, usuario, precioInicial, fechaCierre, descripcion, imagen) {
+        console.log(imagen)
         const res = await Producto.create(
             {
                 nombre: nombre,
@@ -112,7 +114,10 @@ class ServiceProducto {
                 puja: {}
             }
         );
-        return res;
+
+        const res_upload = await uploadImage(res._id, res.imagen)
+
+        return res_upload;
     }
 
     async checkProductoActualizable(id) {

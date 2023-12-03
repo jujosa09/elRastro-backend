@@ -42,6 +42,13 @@ const listarProductosPorPujasUsuario = async(req, res) => {
 
 const guardarProducto = async(req, res) => {
     try {
+        console.log("Req: " + req.body.nombre)
+        console.log("Req: " + req.body.precioInicial)
+        console.log("Req: " + req.body.fechaCierre)
+        console.log("Req: " + req.body.name)
+
+
+
         if (typeof req.body.id !== "undefined" && req.body.id !== null && req.body.id !== '') {
             const check = await  serviceProducto.checkProductoActualizable(req.body.id);
             if (check !== 'ok') {
@@ -62,7 +69,8 @@ const guardarProducto = async(req, res) => {
                 res.status(400).send("El usuario no existe")
             }else{
                 const check = await serviceProducto.checkProducto(req.body.nombre, req.body.usuario);
-                if (check !== 'ok') {
+                //if (check !== 'ok') {
+                if (false){
                     res.status(409).send({message: check});
                 } else {
                     const producto = await serviceProducto.create(
