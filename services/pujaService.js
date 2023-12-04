@@ -22,9 +22,9 @@ class ServicePuja {
         return res;
     }
 
-    async findByUser(idUsuario) {
+    async findByUser(correo) {
         const res = await Puja.find({
-            usuario: idUsuario
+            usuario: correo
         })
         return res;
     }

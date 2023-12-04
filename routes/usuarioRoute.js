@@ -1,7 +1,9 @@
 const express = require('express')
 
-const { createUsuarioController, getUsuarioByIdController, deleteUsuarioController, updateUsuarioController, 
-    updateValoracionController, getRatingUsuarioController } = require('../controllers/usuarioController')
+const { createUsuarioController, getUsuarioByIdController, deleteUsuarioController, updateUsuarioController,
+        updateValoracionController, getRatingUsuarioController, getValoracionUsuarioController,
+    createUsuarioFromGoogleController,getUsuarioFromTokenController
+} = require('../controllers/usuarioController')
 
 const routerUsuario = express.Router()
 
@@ -10,7 +12,10 @@ routerUsuario.get('/', getUsuarioByIdController)
 routerUsuario.delete('/:id', deleteUsuarioController)
 routerUsuario.put('/', updateUsuarioController)
 routerUsuario.put('/valoracion', updateValoracionController)
-routerUsuario.get('/valoracion', getRatingUsuarioController)
+routerUsuario.get('/valoracionMedia', getRatingUsuarioController)
+routerUsuario.get('/valoracion', getValoracionUsuarioController)
+routerUsuario.get('/fromToken', getUsuarioFromTokenController)
+routerUsuario.get('/checkOrCreate', createUsuarioFromGoogleController)
 
 module.exports = {
     routerUsuario

@@ -14,20 +14,58 @@ const createUsuarioController = async (req, res, next) => {
         if (usuario.message !== 'ok') {
             res.status(409).send({message: usuario.message});
         } else {
-            res.status(201).send({message: "Usuario " + usuario.usuario.id + " creado con éxito", usuario: usuario.usuario});
+            res.status(201).send({message: "Usuario " + usuario.usuario.correo + " creado con éxito", usuario: usuario.usuario});
         }
     }catch (error) {
         res.status(500).send({success: false, message: error.message});
     }
 
-} 
+}
+
+const getUsuarioFromTokenController = async (req, res, next) => {
+    try{
+        const isValid = await serviceUsuario.verifyGoogleToken(req.query.token)
+        if(isValid.status === 200){
+            userData = await serviceUsuario.getDataFromGoogleToken(req.query.token)
+            console.log(userData)
+            const usuario = await serviceUsuario.getUsuarioByCorreo(userData.email)
+            res.status(200).send(usuario);
+        }else{
+            res.status(isValid.status).send(isValid.res);
+        }
+
+
+    }catch(error){
+        res.status(500).send({success: false, message: error.message});
+    }
+}
+
+const createUsuarioFromGoogleController = async (req, res, next) => {
+    try{
+        const isValid = await serviceUsuario.verifyGoogleToken(req.query.token)
+        if(isValid.status === 200){
+            const googleUser = await serviceUsuario.getDataFromGoogleToken(req.query.token);
+            const localUsuario = await serviceUsuario.getUsuarioByCorreo(googleUser.email);
+            if (localUsuario.length === 0) {
+                console.log("El usuario no existe creo uno nuevo")
+                const newUsuario = await serviceUsuario.createUsuarioFromGoogle(req.query.token);
+                res.status(200).send({message: "Usuario creado con éxito"});
+            } else {
+                res.status(200).send({message: "Usuario ya existe"});
+            }
+        }else{
+            res.status(isValid.status).send(isValid.res);
+        }
+
+    }catch (error) {
+        res.status(500).send({success: false, message: error.message});
+    }
+}
 
 const getUsuarioByIdController = async (req, res, next) => {
     
     try{
-        if(req.query.id){
-            usuario = await serviceUsuario.getUsuarioById(req.query.id)
-        }else if(req.query.nombre){
+        if(req.query.nombre){
             usuario = await serviceUsuario.getUsuarioByNombre(req.query.nombre)
         }else if(req.query.correo){
             usuario = await serviceUsuario.getUsuarioByCorreo(req.query.correo)
@@ -44,7 +82,7 @@ const getUsuarioByIdController = async (req, res, next) => {
 
 const deleteUsuarioController = async (req, res, next) => {
    try{
-        const response = await serviceUsuario.deleteUsuario(req.params.id)
+        const response = await serviceUsuario.deleteUsuario(req.params.correo)
         res.status(response.status).send(response.res);
    }catch(error){
         res.status(500).send({success: false, message: error.message});
@@ -59,6 +97,7 @@ const updateUsuarioController = async (req, res, next) => {
             res.status(400).send("El usuario que quiere actualizar no existe");
         }else{
             res.status(200).send({usuario: response});
+        }
         }
     }catch(error){
         res.status(500).send({success: false, message: error.message});
@@ -83,8 +122,18 @@ const updateValoracionController = async (req, res, next) => {
 
 const getRatingUsuarioController = async (req, res, next) => {
     try{
-        const media = await serviceUsuario.getValoracionMedia(req.query.idUsuario)
+        const media = await serviceUsuario.getValoracionMedia(req.query.correo)
         res.status(200).send({usuario: media});
+    }catch(error){
+        res.status(500).send({success: false, message: error.message});
+    }
+}
+
+
+const getValoracionUsuarioController = async (req, res, next) => {
+    try{
+        const valoracion = await serviceUsuario.getValoracion(req.query.correo)
+        res.status(200).send({usuario: valoracion});
     }catch(error){
         res.status(500).send({success: false, message: error.message});
     }
@@ -95,5 +144,8 @@ module.exports = {
     deleteUsuarioController,
     updateUsuarioController,
     updateValoracionController,
-    getRatingUsuarioController
+    getRatingUsuarioController,
+    getValoracionUsuarioController,
+    createUsuarioFromGoogleController,
+    getUsuarioFromTokenController
 }

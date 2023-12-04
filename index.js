@@ -15,11 +15,17 @@ const {routerCarbono} = require("./routes/routerCarbono");
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(cors())
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
+
 
 app.get('/', (req, res, next) => {
     res.send('App working!')
     next()
 })
+const cors = require('cors')
+
+app.use(cors())
 
 app.use('/upload', routerImage)
 app.use('/puja', routerPuja)

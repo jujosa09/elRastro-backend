@@ -9,13 +9,16 @@ const serviceUsuario = new ServiceUsuario()
 
 const listarProductos = async(req, res) => {
     try {
-        if (typeof req.query.usuario !== 'undefined' && req.query.usuario !== null && req.query.usuario !== '') {
-            const productos = await serviceProducto.findByUsuario(req.query.usuario);
-            res.status(200).send({productos: productos});
-        } else {
-            const productos = await serviceProducto.findAll();
-            res.status(200).send({productos: productos});
-        }
+        if (typeof req.params.id !== 'undefined' && req.params.id !== null && req.params.id !== '') {
+            const producto = await serviceProducto.findById(req.params.id);
+              res.status(200).send({producto: producto});
+          } else if (typeof req.query.usuario !== 'undefined' && req.query.usuario !== null && req.query.usuario !== '') {
+              const productos = await serviceProducto.findByUsuario(req.query.usuario);
+              res.status(200).send({productos: productos});
+          } else {
+              const productos = await serviceProducto.findAll();
+              res.status(200).send({productos: productos});
+          }
     } catch (error) {
         res.status(500).send({success: false, message: error.message});
     }
@@ -42,6 +45,7 @@ const listarProductosPorPujasUsuario = async(req, res) => {
 
 const guardarProducto = async(req, res) => {
     try {
+        
         if (typeof req.body.id !== "undefined" && req.body.id !== null && req.body.id !== '') {
             const check = await  serviceProducto.checkProductoActualizable(req.body.id);
             if (check !== 'ok') {
@@ -56,13 +60,14 @@ const guardarProducto = async(req, res) => {
                 res.status(200).send({message: 'Producto ' + req.body.id + ' actualizado con éxito', producto: producto});
             }
         } else {
-            const usuario = serviceUsuario.getUsuarioById(req.body.usuario)
+            const usuario = serviceUsuario.getUsuarioByCorreo(req.body.usuario)
 
             if(usuario === null){
                 res.status(400).send("El usuario no existe")
             }else{
                 const check = await serviceProducto.checkProducto(req.body.nombre, req.body.usuario);
-                if (check !== 'ok') {
+                //if (check !== 'ok') {
+                if (false){
                     res.status(409).send({message: check});
                 } else {
                     const producto = await serviceProducto.create(

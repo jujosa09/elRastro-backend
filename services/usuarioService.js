@@ -19,8 +19,8 @@ class ServiceUsuario {
             const existingUsuarios = foundUsuario.map(usuario => usuario.toJSON());
     
             for (const existingUsuario of existingUsuarios) {
-                if (existingUsuario['nombre'] === usuario['nombre']) {
-                    return {message: "Ya existe un usuario con el mismo nombre"};
+                if (existingUsuario['correo'] === usuario['correo']) {
+                    return {message: "Ya existe un usuario con el mismo correo"};
                 }
             }
 
@@ -38,10 +38,48 @@ class ServiceUsuario {
         }
     }
 
-    async getUsuarioById(id) {
-        const foundUsuario = await Usuario.findById(id)
-        return foundUsuario;
+    async getDataFromGoogleToken(token) {
+        const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo?access_token=' + token);
+        const json = await response.json();
+
+        return json;
     }
+
+    async createUsuarioFromGoogle(token) {
+        try {
+            const json = await this.getDataFromGoogleToken(token);
+            const res = await Usuario.create(
+                {
+                    nombre: json.name,
+                    correo: json.email,
+                }
+            )
+
+            return {status: 200,res: 'Usuario creado con los datos de Google con éxito'};
+        } catch (error) {
+            return {status: 401, res: error};
+        }
+    }
+
+
+
+    async verifyGoogleToken(googleToken) {
+        try {
+            const response = await fetch('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + googleToken);
+            const json = await response.json();
+            if(json.error){
+                return {status: 401, res: "El token de sesión no es válido"}
+            }else{
+                return {status: 200, res: "valido"};
+            }
+
+        }
+        catch (error) {
+            console.error('Error al verificar el token de Google:', error);
+            return {status: 401, res: "token no valido"};
+        }
+    }
+
 
     async getUsuarioByNombre(nombreUsuario) {
         const foundUsuario = await Usuario.findOne({ nombre: nombreUsuario })
@@ -58,56 +96,63 @@ class ServiceUsuario {
         return foundUsuario;
     }
 
-    async deleteUsuario(id) {
-        const producto = await serviceProducto.findByUsuario(id)
+    async deleteUsuario(correo) {
+        const producto = await serviceProducto.findByUsuario(correo)
         if(producto.length !== 0){
-            return {status: 409, res: "El usuario " + id + " tiene productos y no se puede borrar"};
+            return {status: 409, res: "El usuario " + correo + " tiene productos y no se puede borrar"};
         }else{
-            const res = await Usuario.findByIdAndDelete(id);
+            const res = await Usuario.deleteOne({correo: correo});
             return {status: 200, res: res};
         }
     }
 
-    async updateUsuario(id, nombreUsuario, correo) {
-        const usuario = await Usuario.findByIdAndUpdate(id, { nombre: nombreUsuario, correo: correo},
+    async updateUsuario(correo, nombreUsuario) {
+        const usuario = await Usuario.findOneAndUpdate({correo: correo}, { nombre: nombreUsuario },
             { new: true });
 
         return usuario;
     }
 
     async valorar(valoracion, usuarioValorado, usuarioValorador, producto){
-        const foundValorador = await Usuario.findOne({nombre: usuarioValorador})
+        const foundValorador = await Usuario.findOne({correo: usuarioValorador})
         const nuevaValoracion = {
-            valorador: foundValorador.nombre,
+            valorador: foundValorador.correo,
             puntuacion: valoracion.puntuacion,
             descripcion: valoracion.descripcion,
             producto: producto
         }
 
-        const foundUsuario  = await Usuario.findByIdAndUpdate(usuarioValorado, {$push: {valoracion: nuevaValoracion}},
+        const foundUsuario  = await Usuario.findOneAndUpdate({correo: usuarioValorado}, {$push: {valoracion: nuevaValoracion}},
             { new: true });
         return foundUsuario.toJSON();
     }
 
-    async getValoracionMedia(idUsuario){
-        const foundUsuario = await Usuario.findById(idUsuario);
+    async getValoracionMedia(correo){
+        const foundUsuario = await Usuario.findOne({correo: correo});
 
-        const sumaPuntuaciones = foundUsuairo.valoracion.reduce((total, val) => {
+        const sumaPuntuaciones = foundUsuario.valoracion.reduce((total, val) => {
             return total + val.puntuacion;
           }, 0);
 
         const cantidadValoraciones = foundUsuario.valoracion.length;
         const mediaPuntuaciones = cantidadValoraciones > 0 ? sumaPuntuaciones / cantidadValoraciones : 0;
-
+      
         return mediaPuntuaciones.toJSON();
 
     }
 
-    
+    async getValoracion(correo){
+        const foundUsuario = await Usuario.findOne({correo: correo});
+        console.log(foundUsuario)
+        const valoraciones = foundUsuario.valoracion;
+
+        return valoraciones;
+
+    }
 
     async checkValoracion(usuarioValorado, usuarioValorador, producto) {
-        const foundValorado = await Usuario.findById(usuarioValorado)
-        const foundValorador = await Usuario.findOne({nombre: usuarioValorador})
+        const foundValorado = await Usuario.findOne({correo: usuarioValorado})
+        const foundValorador = await Usuario.findOne({correo: usuarioValorador})
         const foundProducto = await serviceProducto.findById(producto);
         const subastaClosed = foundProducto.puja;
         const currentDate = new Date();
@@ -121,11 +166,11 @@ class ServiceUsuario {
             return "El producto sobre el que se quiere valorar no existe";
         }else if(foundProducto.fechaCierre < currentDate){
 
-            const foundValoracion = foundValorado.valoracion.filter((val) => val.producto === producto && val.valorador === foundValorador.nombre);
-
+            const foundValoracion = foundValorado.valoracion.filter((val) => val.producto === producto && val.valorador === foundValorador.correo);
+            console.log(subastaClosed.usuario)
             if(foundValoracion.length !== 0){
                 return "A este usuario ya se le ha valorado por este producto";
-            }else if(subastaClosed.usuario !== foundValorador.id){
+            }else if(subastaClosed.usuario !== foundValorador.correo){
                 return "El usuario no ha sido el ganador del producto";
             }
             return "ok"

@@ -1,7 +1,7 @@
 const { cloudinary } = require('../storage');
 const Producto = require('../db/models/producto');
 
-const uploadImage = async (productoId, image) => {
+async function uploadImage(productoId, image){
     try {
         console.log(productoId)
         const producto = await Producto.findById(productoId);
@@ -37,7 +37,7 @@ const uploadImage = async (productoId, image) => {
         console.error(error);
         return { statusCode: 500, message: "Error en la carga de la imagen" };
     }
-};
+}
 
 module.exports = {
     uploadImage
