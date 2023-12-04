@@ -1,5 +1,6 @@
 require('./db/mongoose')
 const express = require('express')
+const cors = require('cors')
 const app = express()
 const bodyParser = require('body-parser')
 
@@ -13,6 +14,7 @@ const {routerCarbono} = require("./routes/routerCarbono");
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: true}))
+app.use(cors())
 
 app.get('/', (req, res, next) => {
     res.send('App working!')

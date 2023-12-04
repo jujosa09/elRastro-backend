@@ -44,12 +44,12 @@ class ServiceUsuario {
     }
 
     async getUsuarioByNombre(nombreUsuario) {
-        const foundUsuario = await Usuario.find({ nombre: nombreUsuario })
+        const foundUsuario = await Usuario.findOne({ nombre: nombreUsuario })
         return foundUsuario;
     }
 
     async getUsuarioByCorreo(correo) {
-        const foundUsuario = await Usuario.find({ correo: correo })
+        const foundUsuario = await Usuario.findOne({ correo: correo })
         return foundUsuario;
     }
 
