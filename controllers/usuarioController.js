@@ -98,7 +98,6 @@ const updateUsuarioController = async (req, res, next) => {
         }else{
             res.status(200).send({usuario: response});
         }
-        }
     }catch(error){
         res.status(500).send({success: false, message: error.message});
     }
