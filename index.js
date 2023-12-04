@@ -1,5 +1,6 @@
 require('./db/mongoose')
 const express = require('express')
+const cors = require('cors')
 const app = express()
 const bodyParser = require('body-parser')
 
@@ -11,6 +12,9 @@ const {routerUsuario} = require('./routes/usuarioRoute')
 const {routerEmail} = require('./routes/emailRoute')
 const {routerCarbono} = require("./routes/routerCarbono");
 
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({extended: true}))
+app.use(cors())
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 

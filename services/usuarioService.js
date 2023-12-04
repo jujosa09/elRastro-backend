@@ -136,8 +136,8 @@ class ServiceUsuario {
 
         const cantidadValoraciones = foundUsuario.valoracion.length;
         const mediaPuntuaciones = cantidadValoraciones > 0 ? sumaPuntuaciones / cantidadValoraciones : 0;
-
-        return mediaPuntuaciones;
+      
+        return mediaPuntuaciones.toJSON();
 
     }
 
@@ -149,7 +149,6 @@ class ServiceUsuario {
         return valoraciones;
 
     }
-    
 
     async checkValoracion(usuarioValorado, usuarioValorador, producto) {
         const foundValorado = await Usuario.findOne({correo: usuarioValorado})
