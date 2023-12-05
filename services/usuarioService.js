@@ -137,13 +137,12 @@ class ServiceUsuario {
         const cantidadValoraciones = foundUsuario.valoracion.length;
         const mediaPuntuaciones = cantidadValoraciones > 0 ? sumaPuntuaciones / cantidadValoraciones : 0;
       
-        return mediaPuntuaciones.toJSON();
+        return mediaPuntuaciones;
 
     }
 
     async getValoracion(correo){
         const foundUsuario = await Usuario.findOne({correo: correo});
-        console.log(foundUsuario)
         const valoraciones = foundUsuario.valoracion;
 
         return valoraciones;
@@ -167,10 +166,11 @@ class ServiceUsuario {
         }else if(foundProducto.fechaCierre < currentDate){
 
             const foundValoracion = foundValorado.valoracion.filter((val) => val.producto === producto && val.valorador === foundValorador.correo);
-            console.log(subastaClosed.usuario)
+            
+            console.log(foundProducto)
             if(foundValoracion.length !== 0){
                 return "A este usuario ya se le ha valorado por este producto";
-            }else if(subastaClosed.usuario !== foundValorador.correo){
+            }else if(subastaClosed.usuario !== foundValorador.correo && foundProducto.usuario !== foundValorador.correo){
                 return "El usuario no ha sido el ganador del producto";
             }
             return "ok"
