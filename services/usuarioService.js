@@ -54,17 +54,17 @@ class ServiceUsuario {
             const usuario = await this.getUsuarioByCorreo(json.res.email);
             //Si no existe, lo creamos
             let result;
-            if(usuario === []){
+            if(usuario === [] || usuario === null){
                 result = await Usuario.create(
                     {
-                        nombre: json.name,
-                        correo: json.email,
-                        imagen: json.picture
+                        nombre: json.res.name,
+                        correo: json.res.email,
+                        imagen: json.res.picture
                     }
                 )
             //Si existe, en caso de que sea necesario actualizamos la imagen
             }else{
-                if(usuario.imagen !== json.picture || usuario.imagen === null){
+                if(usuario.imagen !== null|| usuario.imagen === json.picture){
 
                     result = await Usuario.findOneAndUpdate({correo: json.res.email}, { imagen: json.res.picture },
                         { new: true });
