@@ -42,20 +42,37 @@ class ServiceUsuario {
         const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo?access_token=' + token);
         const json = await response.json();
 
-        return json;
+        return {status: response.status, res: json}
+
     }
 
-    async createUsuarioFromGoogle(token) {
+    async createOrUpdateUsuarioFromGoogle(token) {
         try {
+            //Obtenemos los datos del usuario de Google
             const json = await this.getDataFromGoogleToken(token);
-            const res = await Usuario.create(
-                {
-                    nombre: json.name,
-                    correo: json.email,
-                }
-            )
+            //Comprobamos si el usuario existe en la base de datos
+            const usuario = await this.getUsuarioByCorreo(json.res.email);
+            //Si no existe, lo creamos
+            let result;
+            if(usuario === []){
+                result = await Usuario.create(
+                    {
+                        nombre: json.name,
+                        correo: json.email,
+                        imagen: json.picture
+                    }
+                )
+            //Si existe, en caso de que sea necesario actualizamos la imagen
+            }else{
+                if(usuario.imagen !== json.picture || usuario.imagen === null){
 
-            return {status: 200,res: 'Usuario creado con los datos de Google con éxito'};
+                    result = await Usuario.findOneAndUpdate({correo: json.res.email}, { imagen: json.res.picture },
+                        { new: true });
+                }else{
+                    result = usuario;
+                }
+            }
+            return {status: 200, res: result};
         } catch (error) {
             return {status: 401, res: error};
         }
@@ -66,11 +83,11 @@ class ServiceUsuario {
     async verifyGoogleToken(googleToken) {
         try {
             const response = await fetch('https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=' + googleToken);
-            const json = await response.json();
-            if(json.error){
-                return {status: 401, res: "El token de sesión no es válido"}
+
+            if(response.status === 200){
+                return {status: 200, res: "El token es válido"};
             }else{
-                return {status: 200, res: "valido"};
+                return {status: 401, res: "El token de sesión no es válido"}
             }
 
         }
