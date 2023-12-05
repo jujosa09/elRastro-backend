@@ -5,9 +5,34 @@ const {uploadImage} = require('./imageService')
 class ServiceProducto {
     constructor() {}
 
-    async findAll() {
-        const res = await Producto.find().sort({fechaInicio: -1});
-        return res;
+    async findAll(filter = 'Fecha_Desc') {
+        let result = [];
+        console.log(filter);
+        switch (String(filter)) {
+            case "Activa":
+                result = await Producto.find({ fechaCiere: {$not :{ $lte : new Date()} }});
+                break;
+            case "Finalizada":
+                result = await Producto.find({ fechaCierre: { $lte: new Date()} }).sort({ fechaInicio: 1 });
+                break;
+            case "Precio_Asc":
+                result = await Producto.find().sort({ precioInicial: 1 });
+                break;
+            case "Precio_Desc":
+                result = await Producto.find().sort({ precioInicial: -1 });
+                break;
+            case "Fecha_Asc":
+                result = await Producto.find().sort({ fechaInicio: 1 });
+                break;
+            case "Fecha_Desc":
+                result = await Producto.find().sort({ fechaInicio: -1 });
+                break;
+            default:
+                console.log("entra default");
+                result = await Producto.find().sort({ fechaInicio: -1 });
+                break;
+        }
+        return result;
     }
 
     async findById(id) {

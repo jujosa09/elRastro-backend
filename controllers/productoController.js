@@ -16,7 +16,7 @@ const listarProductos = async(req, res) => {
               const productos = await serviceProducto.findByUsuario(req.query.usuario);
               res.status(200).send({productos: productos});
           } else {
-              const productos = await serviceProducto.findAll();
+              const productos = await serviceProducto.findAll(req.query.filter);
               res.status(200).send({productos: productos});
           }
     } catch (error) {
