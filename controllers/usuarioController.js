@@ -22,37 +22,23 @@ const createUsuarioController = async (req, res, next) => {
 
 }
 
-const getUsuarioFromTokenController = async (req, res, next) => {
+const checkToken = async (req, res, next) => {
     try{
         const isValid = await serviceUsuario.verifyGoogleToken(req.query.token)
-        if(isValid.status === 200){
-            userData = await serviceUsuario.getDataFromGoogleToken(req.query.token)
-            console.log(userData)
-            const usuario = await serviceUsuario.getUsuarioByCorreo(userData.email)
-            res.status(200).send(usuario);
-        }else{
-            res.status(isValid.status).send(isValid.res);
-        }
 
+        res.status(isValid.status).send(isValid);
 
     }catch(error){
         res.status(500).send({success: false, message: error.message});
     }
 }
 
-const createUsuarioFromGoogleController = async (req, res, next) => {
+const checkUserFromGoogle = async (req, res, next) => {
     try{
         const isValid = await serviceUsuario.verifyGoogleToken(req.query.token)
         if(isValid.status === 200){
-            const googleUser = await serviceUsuario.getDataFromGoogleToken(req.query.token);
-            const localUsuario = await serviceUsuario.getUsuarioByCorreo(googleUser.email);
-            if (localUsuario.length === 0) {
-                console.log("El usuario no existe creo uno nuevo")
-                const newUsuario = await serviceUsuario.createUsuarioFromGoogle(req.query.token);
-                res.status(200).send({message: "Usuario creado con éxito"});
-            } else {
-                res.status(200).send({message: "Usuario ya existe"});
-            }
+            const usuario = await serviceUsuario.createOrUpdateUsuarioFromGoogle(req.query.token)
+            res.status(usuario.status).send(usuario.res);
         }else{
             res.status(isValid.status).send(isValid.res);
         }
@@ -98,7 +84,6 @@ const updateUsuarioController = async (req, res, next) => {
         }else{
             res.status(200).send({usuario: response});
         }
-        
     }catch(error){
         res.status(500).send({success: false, message: error.message});
     }
@@ -146,6 +131,6 @@ module.exports = {
     updateValoracionController,
     getRatingUsuarioController,
     getValoracionUsuarioController,
-    createUsuarioFromGoogleController,
-    getUsuarioFromTokenController
+    checkUserFromGoogle,
+    checkToken
 }
