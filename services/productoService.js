@@ -6,11 +6,9 @@ class ServiceProducto {
     constructor() {}
 
     async findAll(filter = 'Fecha_Desc') {
-        let result = [];
-        console.log(filter);
-        switch (String(filter)) {
+        let result = [];switch (String(filter)) {
             case "Activa":
-                result = await Producto.find({ fechaCiere: {$not :{ $lte : new Date()} }});
+                result = await Producto.find({ fechaCierre:{ $gte : new Date()} });
                 break;
             case "Finalizada":
                 result = await Producto.find({ fechaCierre: { $lte: new Date()} }).sort({ fechaInicio: 1 });
@@ -24,21 +22,58 @@ class ServiceProducto {
             case "Fecha_Asc":
                 result = await Producto.find().sort({ fechaInicio: 1 });
                 break;
-            case "Fecha_Desc":
-                result = await Producto.find().sort({ fechaInicio: -1 });
+            case "Puja_Asc":
+                let productos = await Producto.find();
+
+                // Create an array of promises to get the highest bid for each product
+                let promises = productos.map(async (producto) => {
+                    const pujaMasAlta = await this.getPujaMasAlta(producto._id);
+                    return { producto, pujaMasAlta };
+                });
+
+                // Wait for all promises to resolve
+                let results = await Promise.all(promises);
+
+                // Sort the array based on the highest bid
+                results.sort((a, b) => a.pujaMasAlta - b.pujaMasAlta);
+
+                // Extract the sorted products
+                result = results.map((result) => result.producto);
+
                 break;
+            case "Puja_Desc":
+                let productos1 = await Producto.find();
+
+                // Create an array of promises to get the highest bid for each product
+                let promises1 = productos1.map(async (producto) => {
+                    const pujaMasAlta = await this.getPujaMasAlta(producto._id);
+                    return { producto, pujaMasAlta };
+                });
+
+                // Wait for all promises to resolve
+                let results1 = await Promise.all(promises1);
+
+                // Sort the array based on the highest bid
+                results1.sort((a, b) => b.pujaMasAlta - a.pujaMasAlta);
+
+                // Extract the sorted products
+                result = results1.map((result) => result.producto);
+
+                break;
+
             default:
-                console.log("entra default");
                 result = await Producto.find().sort({ fechaInicio: -1 });
                 break;
         }
         return result;
     }
 
+
     async findById(id) {
         const res = await Producto.findById(id);
         return res;
     }
+
 
     async findByNombre(nombre) {
         const res = await Producto.find(
@@ -66,6 +101,23 @@ class ServiceProducto {
         return productosByPujas;
     }
 
+    async getPujaMasAlta(productoId) {
+        const producto = await this.findById(productoId);
+        const pujas = producto.puja;
+        let pujaMasAlta = 0;
+        if(producto.precioInicial !== undefined){
+            pujaMasAlta = producto.precioInicial;
+        }
+        if(pujas !== undefined){
+            for (let i = 0; i < pujas.length; i++) {
+                if (pujas[i].cantidad > pujaMasAlta) {
+                    pujaMasAlta = pujas[i].cantidad;
+                }
+            }
+        }
+        return pujaMasAlta;
+    }
+
     async processProductosByPujas(productoId, puja, productosByPujas) {
         let j = 0;
         while (j < productosByPujas.length && productosByPujas[j].producto.id !== productoId) {
@@ -89,24 +141,107 @@ class ServiceProducto {
         return res;
     }
 
-    async filterProductos(nombre, descripcion) {
+    async filterProductos(nombre, descripcion, filter = 'Fecha_Desc') {
         if (typeof nombre === 'undefined' && typeof descripcion == 'undefined') {
             const res = await this.findAll().sort({fechaInicio: -1});
             return res;
         } else {
-            const res = await Producto.find(
-                {
-                    nombre: {
-                        '$regex': nombre,
-                        '$options': 'i'
-                    },
+            let res = [];
+            switch (String(filter)) {
+                case "Activa":
+                    res = await Producto.find(
+                        {
+                            nombre: {
+                                '$regex': nombre,
+                                '$options': 'i'
+                            },
 
-                    descripcion: {
-                        '$regex': descripcion,
-                        '$options': 'i'
-                    }
-                }
-            ).sort({fechaInicio: -1});
+                            descripcion: {
+                                '$regex': descripcion,
+                                '$options': 'i'
+                            },
+                            fechaCierre: { $gte : new Date()}
+                        }
+                    );
+                    break;
+                case "Finalizada":
+                    res =  await Producto.find(
+                        {
+                            nombre: {
+                                '$regex': nombre,
+                                '$options': 'i'
+                            },
+
+                            descripcion: {
+                                '$regex': descripcion,
+                                '$options': 'i'
+                            },
+                            fechaCierre: { $lte : new Date()}
+                        }
+                    );
+                    break;
+                case "Precio_Asc":
+                    res = await Producto.find(
+                        {
+                            nombre: {
+                                '$regex': nombre,
+                                '$options': 'i'
+                            },
+
+                            descripcion: {
+                                '$regex': descripcion,
+                                '$options': 'i'
+                            }
+                        }
+                    ).sort({ precioInicial: 1 });
+                    break;
+                case "Precio_Desc":
+                    res = await Producto.find(
+                        {
+                            nombre: {
+                                '$regex': nombre,
+                                '$options': 'i'
+                            },
+
+                            descripcion: {
+                                '$regex': descripcion,
+                                '$options': 'i'
+                            }
+                        }
+                    ).sort({ precioInicial: -1 });
+                    break;
+                case "Fecha_Asc":
+                    res = await Producto.find(
+                        {
+                            nombre: {
+                                '$regex': nombre,
+                                '$options': 'i'
+                            },
+
+                            descripcion: {
+                                '$regex': descripcion,
+                                '$options': 'i'
+                            }
+                        }
+                    ).sort({ fechaInicio: 1 });
+                    break;
+                default:
+                    res = await Producto.find(
+                        {
+                            nombre: {
+                                '$regex': nombre,
+                                '$options': 'i'
+                            },
+
+                            descripcion: {
+                                '$regex': descripcion,
+                                '$options': 'i'
+                            }
+                        }
+                    ).sort({ fechaInicio: -1 });
+                    break;
+            }
+
             return res;
         }
     }
