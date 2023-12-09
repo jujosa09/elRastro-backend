@@ -22,6 +22,7 @@ const createUsuarioController = async (req, res, next) => {
 
 }
 
+
 const checkToken = async (req, res, next) => {
     try{
         const isValid = await serviceUsuario.verifyGoogleToken(req.query.token)
@@ -47,6 +48,7 @@ const checkUserFromGoogle = async (req, res, next) => {
         res.status(500).send({success: false, message: error.message});
     }
 }
+
 
 const getUsuarioByIdController = async (req, res, next) => {
     

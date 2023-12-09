@@ -134,7 +134,8 @@ class ServiceUsuario {
         const foundValorador = await Usuario.findOne({correo: usuarioValorador})
         const nuevaValoracion = {
             valorador: foundValorador.correo,
-            puntuacion: valoracion.puntuacion,
+            calidad: valoracion.calidad,
+            fiabilidad: valoracion.fiabilidad,
             descripcion: valoracion.descripcion,
             producto: producto
         }
@@ -148,12 +149,16 @@ class ServiceUsuario {
         const foundUsuario = await Usuario.findOne({correo: correo});
 
         const sumaPuntuaciones = foundUsuario.valoracion.reduce((total, val) => {
-            return total + val.puntuacion;
-          }, 0);
+            const calidadNumerica = parseFloat(val.calidad) || 0; // parseFloat convierte a número de punto flotante, el '|| 0' maneja el caso en que no se pueda convertir
+            const fiabilidadNumerica = parseFloat(val.fiabilidad) || 0;
+            console.log(val.calidad)
+            return total + calidadNumerica + fiabilidadNumerica;
+        }, 0);
 
-        const cantidadValoraciones = foundUsuario.valoracion.length;
+        const cantidadValoraciones = foundUsuario.valoracion.length * 2;
+
         const mediaPuntuaciones = cantidadValoraciones > 0 ? sumaPuntuaciones / cantidadValoraciones : 0;
-      
+        console.log(sumaPuntuaciones)
         return mediaPuntuaciones;
 
     }

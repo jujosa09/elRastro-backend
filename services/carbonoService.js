@@ -6,7 +6,9 @@ class ServiceCarbono {
     async getCoordenadasByCodPostal(codPostal) {
         const response = await fetch('https://api.mapbox.com/geocoding/v5/mapbox.places/'+codPostal+'.json?country=es&types=postcode&language=es&access_token='+process.env.MAPBOX_TOKEN+'&limit=1');
         const json = await response.json();
+        console.log(json.features)
         const coordenadas = json.features[0].geometry.coordinates;
+        //console.log(coordenadas)
         return {lat: coordenadas[1].toString(), long: coordenadas[0].toString()};
     }
 
