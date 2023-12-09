@@ -81,7 +81,7 @@ module.exports = ServiceCarbono;
                 }
             },
             headers: {
-                'Authorization': 'Bearer ' + process.env.CLIMATIQ_API_KEY
+                'Authorization': 'Bearer ' + process..env.CLIMATIQ_API_KEY
             };
         };
 
@@ -98,7 +98,7 @@ module.exports = ServiceCarbono;
                 'vehicle_model_id': '7268a9b7-17e8-4c8d-acca-57059252afe9'
             },
             headers: {
-                'Authorization': 'Bearer ' + process.env.CARBON_INTERFACE_API_KEY,
+                'Authorization': 'Bearer ' + process..env.CARBON_INTERFACE_API_KEY,
                 'Content-Type': 'application/json'
             }
         }

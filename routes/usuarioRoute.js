@@ -1,5 +1,4 @@
 const express = require('express')
-
 const { createUsuarioController, getUsuarioByIdController, deleteUsuarioController, updateUsuarioController,
         updateValoracionController, getRatingUsuarioController, getValoracionUsuarioController,
         checkUserFromGoogle,checkToken
@@ -14,7 +13,7 @@ routerUsuario.put('/', updateUsuarioController)
 routerUsuario.put('/valoracion', updateValoracionController)
 routerUsuario.get('/valoracionMedia', getRatingUsuarioController)
 routerUsuario.get('/valoracion', getValoracionUsuarioController)
-routerUsuario.get('/checkToken', checkToken),
+routerUsuario.get('/checkToken', checkToken)
 routerUsuario.get('/checkOrCreate', checkUserFromGoogle)
 
 module.exports = {

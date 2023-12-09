@@ -72,9 +72,9 @@ class ServicePuja {
             if (pujasProducto.length > 0) {
                 const pujaMasAlta = pujasProducto.slice(-1)[0];
                 if (pujaMasAlta.usuario === usuario) {
-                    return 'Ya eres el usuario con la puja más alta para el producto ' + producto;
+                    return 'Ya eres el usuario con la puja más alta para este producto';
                 } else if (pujaMasAlta.cantidad >= cantidad) {
-                    return 'La puja no supera la puja más alta para el producto ' + producto;
+                    return 'La cantidad introducida no supera la puja más alta para este producto';
                 } else {
                     return 'ok';
                 }
