@@ -12,7 +12,7 @@ const getCoordinatesFromPostalCode = async (req, res, next) => {
 
 const getHuellaCarbono = async (req, res) => {
     try {
-        const huella = await serviceCarbono.getHuellaCarbono(req.query.codPostalUsuario, req.query.codPostalProducto);
+        const huella = await serviceCarbono.getHuellaCarbono(req.query.userLat,req.query.userLong, req.query.codPostalProducto);
         res.status(200).send(huella);
     } catch (error) {
         res.status(500).send({success: false, message: error.message});
