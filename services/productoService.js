@@ -7,68 +7,9 @@ class ServiceProducto {
     constructor() {
     }
 
-    async findAll(filter = 'Fecha_Desc') {
-        let result = [];
-        switch (String(filter)) {
-            case "Activa":
-                result = await Producto.find({fechaCierre: {$gte: new Date()}});
-                break;
-            case "Finalizada":
-                result = await Producto.find({fechaCierre: {$lte: new Date()}}).sort({fechaInicio: 1});
-                break;
-            case "Precio_Asc":
-                result = await Producto.find().sort({precioInicial: 1});
-                break;
-            case "Precio_Desc":
-                result = await Producto.find().sort({precioInicial: -1});
-                break;
-            case "Fecha_Asc":
-                result = await Producto.find().sort({fechaInicio: 1});
-                break;
-            case "Puja_Asc":
-                let productos = await Producto.find();
-
-                // Create an array of promises to get the highest bid for each product
-                let promises = productos.map(async (producto) => {
-                    const pujaMasAlta = await this.getPujaMasAlta(producto._id);
-                    return {producto, pujaMasAlta};
-                });
-
-                // Wait for all promises to resolve
-                let results = await Promise.all(promises);
-
-                // Sort the array based on the highest bid
-                results.sort((a, b) => a.pujaMasAlta - b.pujaMasAlta);
-
-                // Extract the sorted products
-                result = results.map((result) => result.producto);
-
-                break;
-            case "Puja_Desc":
-                let productos1 = await Producto.find();
-
-                // Create an array of promises to get the highest bid for each product
-                let promises1 = productos1.map(async (producto) => {
-                    const pujaMasAlta = await this.getPujaMasAlta(producto._id);
-                    return {producto, pujaMasAlta};
-                });
-
-                // Wait for all promises to resolve
-                let results1 = await Promise.all(promises1);
-
-                // Sort the array based on the highest bid
-                results1.sort((a, b) => b.pujaMasAlta - a.pujaMasAlta);
-
-                // Extract the sorted products
-                result = results1.map((result) => result.producto);
-
-                break;
-
-            default:
-                result = await Producto.find().sort({fechaInicio: -1});
-                break;
-        }
-        return result;
+    async findAll() {
+        const res = await Producto.find().sort({fechaInicio: -1});
+        return res;
     }
 
 
@@ -144,29 +85,44 @@ class ServiceProducto {
         return res;
     }
 
-    async filterProductos(nombre, descripcion, filter = 'Fecha_Desc') {
+    async filterProductos(usuario, texto, order) {
         let filtroBusqueda = {};
-        if (typeof nombre !== 'undefined' && typeof descripcion !== 'undefined') {
-            filtroBusqueda = {
-                nombre: {
-                    '$regex': nombre,
-                    '$options': 'i'
-                },
 
-                descripcion: {
-                    '$regex': descripcion,
-                    '$options': 'i'
-                }
-            };
+        if (typeof texto !== 'undefined') {
+            filtroBusqueda = {
+                $or: [
+                    {
+                        nombre:
+                        {
+                            '$regex': texto,
+                            '$options': 'i'
+                        }
+                    },
+
+                    {
+                        descripcion:
+                        {
+                            '$regex': texto,
+                            '$options': 'i'
+                        }
+                    }
+                ]
+            }
+        }
+
+        if (typeof usuario !== 'undefined') {
+            filtroBusqueda.usuario = usuario;
         }
 
         let res = [];
-        switch (String(filter)) {
+        switch (String(order)) {
             case "Activa":
-                res = await Producto.find(filtroBusqueda+{fechaCierre: {$gte: new Date()}}).sort({fechaInicio: -1});
+                filtroBusqueda.fechaCierre = {$gte: new Date()};
+                res = await Producto.find(filtroBusqueda).sort({fechaInicio: -1});
                 break;
             case "Finalizada":
-                res = await Producto.find(filtroBusqueda+{fechaCierre: {$lte: new Date()}}).sort({fechaInicio: -1});
+                filtroBusqueda.fechaCierre = {$lte: new Date()};
+                res = await Producto.find(filtroBusqueda).sort({fechaInicio: -1});
                 break;
             case "Precio_Asc":
                 res = await Producto.find(filtroBusqueda).sort({precioInicial: 1});

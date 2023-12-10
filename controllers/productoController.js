@@ -16,7 +16,7 @@ const listarProductos = async(req, res) => {
               const productos = await serviceProducto.findByUsuario(req.query.usuario);
               res.status(200).send({productos: productos});
           } else {
-              const productos = await serviceProducto.findAll(req.query.filtro);
+              const productos = await serviceProducto.findAll();
               res.status(200).send({productos: productos});
           }
     } catch (error) {
@@ -26,7 +26,7 @@ const listarProductos = async(req, res) => {
 
 const filtrarProductos = async(req, res) => {
     try {
-        const productos = await serviceProducto.filterProductos(req.body.nombre, req.body.descripcion);
+        const productos = await serviceProducto.filterProductos(req.body.usuario, req.body.texto, req.body.orden);
         res.status(200).send({productos: productos});
     } catch (error) {
         res.status(500).send({success: false, message: error.message});
