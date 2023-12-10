@@ -66,8 +66,8 @@ const guardarProducto = async(req, res) => {
                 res.status(400).send("El usuario no existe")
             }else{
                 const check = await serviceProducto.checkProducto(req.body.nombre, req.body.usuario);
-                //if (check !== 'ok') {
-                if (false){
+
+                if (check !== 'ok'){
                     res.status(409).send({message: check});
                 } else {
                     const producto = await serviceProducto.create(
