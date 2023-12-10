@@ -151,14 +151,13 @@ class ServiceUsuario {
         const sumaPuntuaciones = foundUsuario.valoracion.reduce((total, val) => {
             const calidadNumerica = parseFloat(val.calidad) || 0; // parseFloat convierte a número de punto flotante, el '|| 0' maneja el caso en que no se pueda convertir
             const fiabilidadNumerica = parseFloat(val.fiabilidad) || 0;
-            console.log(val.calidad)
+            
             return total + calidadNumerica + fiabilidadNumerica;
         }, 0);
 
         const cantidadValoraciones = foundUsuario.valoracion.length * 2;
 
         const mediaPuntuaciones = cantidadValoraciones > 0 ? sumaPuntuaciones / cantidadValoraciones : 0;
-        console.log(sumaPuntuaciones)
         return mediaPuntuaciones;
 
     }
@@ -189,7 +188,7 @@ class ServiceUsuario {
 
             const foundValoracion = foundValorado.valoracion.filter((val) => val.producto === producto && val.valorador === foundValorador.correo);
             
-            console.log(foundProducto)
+           
             if(foundValoracion.length !== 0){
                 return "A este usuario ya se le ha valorado por este producto";
             }else if(subastaClosed.usuario !== foundValorador.correo && foundProducto.usuario !== foundValorador.correo){
