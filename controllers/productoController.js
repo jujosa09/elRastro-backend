@@ -55,7 +55,10 @@ const guardarProducto = async(req, res) => {
                        req.body.id,
                        req.body.nombre,
                        req.body.direccion,
-                       req.body.descripcion
+                       req.body.descripcion,
+                       req.body.precioInicial,
+                        req.body.fechaCierre,
+                       req.body.imagen
                    );
                 res.status(200).send({message: 'Producto ' + req.body.id + ' actualizado con éxito', producto: producto});
             }

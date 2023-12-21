@@ -54,7 +54,7 @@ class ServiceUsuario {
             const usuario = await this.getUsuarioByCorreo(json.res.email);
             //Si no existe, lo creamos
             let result;
-            if(usuario === [] || usuario === null){
+            if(usuario == [] || usuario === null){
                 result = await Usuario.create(
                     {
                         nombre: json.res.name,

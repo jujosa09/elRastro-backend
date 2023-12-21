@@ -225,16 +225,22 @@ class ServiceProducto {
         }
     }
 
-    async update(id, nombre, direccion, descripcion) {
+    async update(id, nombre, direccion, descripcion, precioInicial, fechaCierre, imagen) {
         const res = await Producto.findByIdAndUpdate(id,
             {
                 nombre: nombre,
                 direccion: direccion,
-                descripcion: descripcion
+                descripcion: descripcion,
+                precioInicial: precioInicial,
+                fechaCierre: fechaCierre,
+                imagen: imagen
             },
             {new: true}
         );
-        return res;
+
+        const res_upload = await uploadImage(res._id, res.imagen)
+
+        return res_upload;
     }
 
     async updatePuja(id, puja) {
