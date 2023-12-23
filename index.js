@@ -36,7 +36,6 @@ app.listen(port, () => {
     console.log('Listening on port ' + port)
 })
 
-cron.schedule('* * * * *', () => {
+cron.schedule('0 0 * * *', () => {
     productoController.reabrirPujas();
-    //console.log('Tarea programada ejecutada.');
 });

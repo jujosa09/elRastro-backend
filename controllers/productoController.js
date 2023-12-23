@@ -112,14 +112,10 @@ const reabrirPujas = async () => {
         console.log("entra")
         for(const producto of productos){
             if(!producto.puja){
-                console.log(producto)
                 const duracion = producto.fechaCierre - producto.fechaInicio;
-                console.log(duracion)
                 const nuevaFechaCierre = new Date();
                 nuevaFechaCierre.setTime(nuevaFechaCierre.getTime() + duracion);
-                console.log(nuevaFechaCierre)
-                const nuevoPrecio = producto.precioInicial * 0.9;
-
+                const nuevoPrecio = Math.round(producto.precioInicial * 0.9 * 100) / 100;
                 await serviceProducto.periodicUpdate(
                     producto.id,
                     nuevoPrecio,
