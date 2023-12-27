@@ -10,6 +10,8 @@ const {routerProducto} = require('./routes/routerProducto')
 const {routerUsuario} = require('./routes/usuarioRoute')
 const {routerEmail} = require('./routes/emailRoute')
 const {routerCarbono} = require("./routes/routerCarbono");
+const productoController = require("./controllers/productoController");
+const cron = require("node-cron");
 
 app.use(bodyParser.json({ limit: '500mb' }));
 app.use(bodyParser.urlencoded({ limit: '500mb', extended: true }));
@@ -33,3 +35,7 @@ const port = 5001
 app.listen(port, () => {
     console.log('Listening on port ' + port)
 })
+
+cron.schedule('1 0 * * *', () => {
+    productoController.reabrirPujas();
+});

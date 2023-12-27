@@ -106,4 +106,26 @@ const borrarProducto = async (req, res) => {
     }
 }
 
-module.exports = {listarProductos, listarProductosPorPujasUsuario, guardarProducto, borrarProducto, filtrarProductos}
+const reabrirPujas = async () => {
+    try{
+        const productos = await serviceProducto.findCerradas();
+        console.log("entra")
+        for(const producto of productos){
+            if(!producto.puja){
+                const duracion = producto.fechaCierre - producto.fechaInicio;
+                const nuevaFechaCierre = new Date();
+                nuevaFechaCierre.setTime(nuevaFechaCierre.getTime() + duracion);
+                const nuevoPrecio = Math.round(producto.precioInicial * 0.9 * 100) / 100;
+                await serviceProducto.periodicUpdate(
+                    producto.id,
+                    nuevoPrecio,
+                    nuevaFechaCierre
+                );
+            }
+        }
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+module.exports = {listarProductos, listarProductosPorPujasUsuario, guardarProducto, borrarProducto, filtrarProductos, reabrirPujas}

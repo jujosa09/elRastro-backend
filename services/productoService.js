@@ -28,6 +28,16 @@ class ServiceProducto {
         return res;
     }
 
+    async findCerradas(){
+        const fechaActual = Date();
+        const res = await Producto.find(
+            {
+                fechaCierre: {$lt: fechaActual}
+            }
+        )
+        return res;
+    }
+
     async findByUsuario(usuario) {
         const res = await Producto.find(
             {
@@ -241,6 +251,17 @@ class ServiceProducto {
         const res_upload = await uploadImage(res._id, res.imagen)
 
         return res_upload;
+    }
+
+    async periodicUpdate(id, precioInicial, fechaCierre) {
+        const res = await Producto.findByIdAndUpdate(id,
+            {
+                precioInicial: precioInicial,
+                fechaCierre: fechaCierre
+            }
+        );
+
+        return res;
     }
 
     async updatePuja(id, puja) {
